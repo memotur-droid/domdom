@@ -222,12 +222,34 @@
   <div class="mode-center">
     <div class="mode-sw">
       <button class="mode-b on" id="modeList" onclick="setMode('list')">📋 Liste</button>
+      <button class="mode-b" id="modePattern" onclick="setMode('pattern')">🎲 Pattern</button>
       <button class="mode-b" id="modeAI" onclick="setMode('generate')">🤖 AI Üret</button>
     </div>
   </div>
 
   <!-- Input Card -->
   <div class="card" style="padding:20px; margin-bottom:20px;">
+    <!-- Pattern Generate Section -->
+    <div id="patternSection" class="hidden" style="margin-bottom:16px;">
+      <div class="label">Harf kalıbı seçin veya özel kalıp yazın (C=sessiz, V=sesli)</div>
+      <div class="tld-row" id="patternChips" style="margin-bottom:10px;"></div>
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <input class="kinput" id="patternCustom" placeholder="Özel kalıp: örn CVCCV, VCCVCV..." style="flex:1;">
+        <input class="kinput" id="patternCount" type="number" value="20" min="1" max="200" placeholder="Adet" style="width:80px;">
+        <button class="btn btn-go" onclick="generateFromPattern()">Üret</button>
+      </div>
+      <div style="margin-top:8px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <label style="font-size:11px; color:#4a5568; display:flex; align-items:center; gap:4px; cursor:pointer;">
+          <input type="checkbox" id="patternPrefix"> <span>Ön ek:</span>
+        </label>
+        <input class="kinput" id="prefixInput" placeholder="örn: ai, go, my..." style="width:100px; padding:7px 10px; font-size:11px;">
+        <label style="font-size:11px; color:#4a5568; display:flex; align-items:center; gap:4px; cursor:pointer;">
+          <input type="checkbox" id="patternSuffix"> <span>Son ek:</span>
+        </label>
+        <input class="kinput" id="suffixInput" placeholder="örn: ly, io, fy..." style="width:100px; padding:7px 10px; font-size:11px;">
+      </div>
+    </div>
+
     <!-- AI Generate Section -->
     <div id="aiSection" class="hidden" style="margin-bottom:16px;">
       <div class="label">Anahtar kelime girin, AI yaratıcı domain önerileri üretsin</div>
@@ -312,8 +334,88 @@ TLD_OPTIONS.forEach(tld => {
 
 function setMode(m) {
   document.getElementById("modeList").className = "mode-b" + (m === "list" ? " on" : "");
+  document.getElementById("modePattern").className = "mode-b" + (m === "pattern" ? " on" : "");
   document.getElementById("modeAI").className = "mode-b" + (m === "generate" ? " on" : "");
+  document.getElementById("patternSection").className = m === "pattern" ? "" : "hidden";
   document.getElementById("aiSection").className = m === "generate" ? "" : "hidden";
+}
+
+// Pattern generator
+const VOWELS = "aeiouy";
+const CONSONANTS = "bcdfghjklmnprstvwxz";
+const PATTERNS = [
+  { pattern: "CVCVC", label: "CVCVC", desc: "5 harf klasik" },
+  { pattern: "CVCCV", label: "CVCCV", desc: "5 harf akıcı" },
+  { pattern: "VCVCV", label: "VCVCV", desc: "5 harf sesli başlı" },
+  { pattern: "CVCV", label: "CVCV", desc: "4 harf kısa" },
+  { pattern: "CVVC", label: "CVVC", desc: "4 harf çift sesli" },
+  { pattern: "CCVCV", label: "CCVCV", desc: "5 harf güçlü" },
+  { pattern: "CVCVCV", label: "CVCVCV", desc: "6 harf melodic" },
+  { pattern: "VCVCCV", label: "VCVCCV", desc: "6 harf ritmik" },
+  { pattern: "CVCCVC", label: "CVCCVC", desc: "6 harf sert" },
+  { pattern: "CVCVCCV", label: "CVCVCCV", desc: "7 harf uzun" },
+  { pattern: "VCVCCCV", label: "VCVCCCV", desc: "7 harf yoğun" },
+  { pattern: "CCVCCV", label: "CCVCCV", desc: "6 harf çift sessiz" },
+  { pattern: "VCV", label: "VCV", desc: "3 harf ultra kısa" },
+  { pattern: "CVCC", label: "CVCC", desc: "4 harf sert son" },
+  { pattern: "CCVCVC", label: "CCVCVC", desc: "6 harf blend" },
+];
+
+let selectedPatterns = ["CVCVC"];
+
+// Init pattern chips
+const patternChips = document.getElementById("patternChips");
+PATTERNS.forEach(p => {
+  const chip = document.createElement("span");
+  chip.className = "tld-chip" + (selectedPatterns.includes(p.pattern) ? " on" : "");
+  chip.textContent = p.label;
+  chip.title = p.desc;
+  chip.onclick = () => {
+    if (selectedPatterns.includes(p.pattern)) {
+      selectedPatterns = selectedPatterns.filter(x => x !== p.pattern);
+      chip.classList.remove("on");
+    } else {
+      selectedPatterns.push(p.pattern);
+      chip.classList.add("on");
+    }
+  };
+  patternChips.appendChild(chip);
+});
+
+function genFromPattern(pat) {
+  let word = "";
+  for (const ch of pat.toUpperCase()) {
+    if (ch === "V") word += VOWELS[Math.floor(Math.random() * VOWELS.length)];
+    else if (ch === "C") word += CONSONANTS[Math.floor(Math.random() * CONSONANTS.length)];
+  }
+  return word;
+}
+
+function generateFromPattern() {
+  const customPat = document.getElementById("patternCustom").value.trim().toUpperCase();
+  const count = Math.min(200, Math.max(1, parseInt(document.getElementById("patternCount").value) || 20));
+  const usePrefix = document.getElementById("patternPrefix").checked;
+  const useSuffix = document.getElementById("patternSuffix").checked;
+  const prefix = usePrefix ? document.getElementById("prefixInput").value.trim().toLowerCase() : "";
+  const suffix = useSuffix ? document.getElementById("suffixInput").value.trim().toLowerCase() : "";
+
+  let patterns = [...selectedPatterns];
+  if (customPat && /^[CV]+$/.test(customPat)) {
+    if (!patterns.includes(customPat)) patterns.push(customPat);
+  }
+  if (!patterns.length) { alert("En az bir kalıp seçin veya özel kalıp girin (C ve V harfleri ile)"); return; }
+
+  const names = new Set();
+  let attempts = 0;
+  while (names.size < count && attempts < count * 10) {
+    const pat = patterns[Math.floor(Math.random() * patterns.length)];
+    const word = prefix + genFromPattern(pat) + suffix;
+    if (word.length >= 3) names.add(word);
+    attempts++;
+  }
+
+  document.getElementById("domainInput").value = [...names].join("\n");
+  setMode("list");
 }
 
 function loadSample() {
