@@ -268,7 +268,7 @@
         <div class="tld-row" id="patternChips" style="margin-bottom:10px;"></div>
         <div style="display:flex; gap:8px; margin-top:8px;">
           <input class="kinput" id="patternCustom" placeholder="Özel kalıp: örn CVCCV, VCCVCV..." style="flex:1;">
-          <input class="small-input" id="patternCount" type="number" value="20" min="1" max="200" placeholder="Adet" style="width:80px;">
+          <input class="small-input" id="patternCount" type="number" value="100" min="1" max="100000" placeholder="Adet" style="width:80px;">
           <button class="btn btn-go" onclick="generateFromPattern()">Üret</button>
         </div>
         <div style="margin-top:8px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
@@ -768,7 +768,7 @@ function genFromPattern(pat) {
 
 function generateFromPattern() {
   const customPat = document.getElementById("patternCustom").value.trim().toUpperCase();
-  const count = Math.min(200, Math.max(1, parseInt(document.getElementById("patternCount").value) || 20));
+  const count = Math.min(100000, Math.max(1, parseInt(document.getElementById("patternCount").value) || 100));
   const usePrefix = document.getElementById("patternPrefix").checked;
   const useSuffix = document.getElementById("patternSuffix").checked;
   const prefix = usePrefix ? document.getElementById("prefixInput").value.trim().toLowerCase() : "";
