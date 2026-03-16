@@ -19,21 +19,11 @@
     --red: #ef4444;
     --yellow: #f59e0b;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    min-height: 100vh;
-  }
-
-  .wrap { max-width: 880px; margin: 0 auto; padding: 40px 20px; }
-
-  /* Header */
-  .header { text-align: center; margin-bottom: 36px; }
-  .header-row { display: inline-flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; min-height: 100vh; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 32px 20px; }
+  .header { text-align: center; margin-bottom: 28px; }
+  .header-row { display: inline-flex; align-items: center; gap: 12px; margin-bottom: 6px; }
   .logo {
     width: 42px; height: 42px; border-radius: 12px;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
@@ -43,306 +33,692 @@
     box-shadow: 0 4px 20px rgba(99,102,241,0.3);
   }
   .header h1 {
-    font-family: 'Outfit', sans-serif;
-    font-size: 30px; font-weight: 800;
+    font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
     background: linear-gradient(135deg, #fff, #94a3b8);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   }
-  .header p { color: var(--dim); font-size: 13px; font-family: 'Outfit', sans-serif; }
-
-  /* Cards */
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-  }
-
-  /* Mode switch */
-  .mode-center { display: flex; justify-content: center; margin-bottom: 22px; }
+  .header p { color: var(--dim); font-size: 12px; font-family: 'Outfit', sans-serif; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; }
+  .mode-center { display: flex; justify-content: center; margin-bottom: 18px; }
   .mode-sw {
     display: inline-flex; background: rgba(255,255,255,0.03);
     border-radius: 10px; padding: 3px; border: 1px solid var(--border);
   }
   .mode-b {
-    padding: 8px 22px; border-radius: 8px; border: none;
+    padding: 8px 20px; border-radius: 8px; border: none;
     background: transparent; color: var(--dim);
-    font-family: 'Outfit', sans-serif; font-size: 13px;
+    font-family: 'Outfit', sans-serif; font-size: 12.5px;
     font-weight: 500; cursor: pointer; transition: all 0.15s;
   }
   .mode-b.on { background: rgba(99,102,241,0.18); color: #a5b4fc; }
-
-  /* Textarea */
-  textarea {
-    background: rgba(0,0,0,0.5); border: 1px solid var(--border);
-    border-radius: 10px; color: var(--text);
-    font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
-    padding: 14px; width: 100%; resize: vertical;
-    outline: none; transition: border-color 0.2s; line-height: 1.8;
-  }
-  textarea:focus { border-color: var(--accent); }
-  textarea::placeholder { color: #2a2f3d; }
-
-  /* Inputs */
-  .kinput {
+  textarea, .kinput {
     background: rgba(0,0,0,0.5); border: 1px solid var(--border);
     border-radius: 9px; color: var(--text);
-    font-family: 'JetBrains Mono', monospace; font-size: 13px;
-    padding: 11px 14px; flex: 1; outline: none;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    padding: 12px; outline: none; transition: border-color 0.2s;
   }
-  .kinput:focus { border-color: var(--accent); }
-  .kinput::placeholder { color: #2a2f3d; }
-
-  /* Buttons */
+  textarea { width: 100%; resize: vertical; line-height: 1.7; }
+  textarea:focus, .kinput:focus { border-color: var(--accent); }
+  textarea::placeholder, .kinput::placeholder { color: #2a2f3d; }
+  .kinput { padding: 10px 12px; flex: 1; }
+  select {
+    background: rgba(0,0,0,0.5); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-family: 'Outfit', sans-serif;
+    font-size: 12px; padding: 8px 10px; outline: none; cursor: pointer;
+  }
+  select:focus { border-color: var(--accent); }
   .btn {
-    border: none; padding: 10px 24px; border-radius: 9px;
+    border: none; padding: 9px 20px; border-radius: 8px;
     font-family: 'Outfit', sans-serif; font-weight: 600;
-    font-size: 13px; cursor: pointer; transition: all 0.15s;
-    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12.5px; cursor: pointer; transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 5px;
   }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .btn-go {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: #fff;
-  }
-  .btn-go:hover:not(:disabled) {
-    box-shadow: 0 6px 24px rgba(99,102,241,0.4);
-    transform: translateY(-1px);
-  }
+  .btn-go { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; }
+  .btn-go:hover:not(:disabled) { box-shadow: 0 5px 18px rgba(99,102,241,0.35); transform: translateY(-1px); }
   .btn-stop { background: var(--red); color: #fff; }
   .btn-dim {
     background: rgba(255,255,255,0.05); color: var(--muted);
-    border: 1px solid var(--border); padding: 8px 14px; font-size: 12px;
+    border: 1px solid var(--border); padding: 7px 12px; font-size: 11.5px;
   }
   .btn-dim:hover { background: rgba(255,255,255,0.1); color: var(--text); }
-
-  /* TLD chips */
-  .tld-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tld-row { display: flex; flex-wrap: wrap; gap: 5px; }
   .tld-chip {
-    padding: 5px 13px; border-radius: 18px; font-size: 11.5px;
+    padding: 4px 11px; border-radius: 14px; font-size: 11px;
     font-weight: 500; cursor: pointer; transition: all 0.15s;
     border: 1px solid var(--border); background: rgba(255,255,255,0.03);
     color: var(--dim); user-select: none;
   }
-  .tld-chip.on {
-    background: rgba(99,102,241,0.18);
-    border-color: rgba(99,102,241,0.4); color: #a5b4fc;
-  }
-
-  /* Filter tabs */
-  .tabs { display: flex; gap: 3px; padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap; }
+  .tld-chip.on { background: rgba(99,102,241,0.18); border-color: rgba(99,102,241,0.4); color: #a5b4fc; }
+  .tabs { display: flex; gap: 3px; padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap; }
   .tab {
-    padding: 7px 15px; border-radius: 7px; font-size: 11.5px;
+    padding: 6px 13px; border-radius: 6px; font-size: 11px;
     font-weight: 500; cursor: pointer; border: none;
     background: transparent; color: var(--dim);
     font-family: 'Outfit', sans-serif; transition: all 0.15s;
   }
   .tab.on { background: rgba(99,102,241,0.12); color: #a5b4fc; }
   .tab:hover { color: #cbd5e1; }
-
-  /* Stats */
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
-  .stat-card { padding: 16px; text-align: center; }
-  .stat-num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 28px; font-weight: 700; line-height: 1;
-  }
-  .stat-label {
-    font-size: 10px; color: var(--dim); margin-top: 4px;
-    font-family: 'Outfit', sans-serif; text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  /* Results */
-  .scroll-box { max-height: 500px; overflow-y: auto; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+  .stat-card { padding: 14px; text-align: center; }
+  .stat-num { font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 700; line-height: 1; }
+  .stat-label { font-size: 9px; color: var(--dim); margin-top: 3px; font-family: 'Outfit', sans-serif; text-transform: uppercase; letter-spacing: 1px; }
+  .scroll-box { max-height: 460px; overflow-y: auto; }
   .scroll-box::-webkit-scrollbar { width: 5px; }
   .scroll-box::-webkit-scrollbar-track { background: transparent; }
   .scroll-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
-
   .row {
-    display: flex; align-items: center; padding: 12px 16px;
-    border-bottom: 1px solid rgba(255,255,255,0.035);
-    gap: 12px; animation: fadeUp 0.2s ease;
+    display: flex; align-items: center; padding: 10px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.03); gap: 10px;
   }
   .row:last-child { border-bottom: none; }
-  .row:hover { background: rgba(255,255,255,0.02); }
-
-  .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-  .row-domain { font-size: 12.5px; font-weight: 500; color: var(--text); }
-  .row-info {
-    font-size: 10.5px; color: var(--dim); margin-top: 2px;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
+  .row:hover { background: rgba(255,255,255,0.015); }
+  .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .row-domain { font-size: 12px; font-weight: 500; color: var(--text); }
+  .row-info { font-size: 10px; color: var(--dim); margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .badge {
-    padding: 3px 10px; border-radius: 5px; font-size: 10px;
+    padding: 3px 9px; border-radius: 5px; font-size: 9.5px;
     font-weight: 600; font-family: 'Outfit', sans-serif;
     white-space: nowrap; letter-spacing: 0.5px;
   }
-
-  /* Progress */
   .bar-track { height: 3px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
-  .bar-fill {
-    height: 100%; border-radius: 3px; transition: width 0.3s;
-    background: linear-gradient(90deg, var(--accent), var(--accent2), #06b6d4);
-  }
-
-  .label { font-size: 11px; color: var(--dim); margin-bottom: 6px; font-family: 'Outfit', sans-serif; }
-  .label-sm { font-size: 10px; color: #2a2f3d; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1.2px; font-family: 'Outfit', sans-serif; }
-  .actions { display: flex; gap: 8px; margin-top: 16px; align-items: center; flex-wrap: wrap; }
-  .footer { text-align: center; margin-top: 30px; font-size: 10px; color: #1e2030; font-family: 'Outfit', sans-serif; }
-
+  .bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s; background: linear-gradient(90deg, var(--accent), var(--accent2), #06b6d4); }
+  .label { font-size: 11px; color: var(--muted); margin-bottom: 6px; font-family: 'Outfit', sans-serif; }
+  .label-sm { font-size: 9.5px; color: #2a2f3d; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1.2px; font-family: 'Outfit', sans-serif; }
+  .actions { display: flex; gap: 7px; margin-top: 14px; align-items: center; flex-wrap: wrap; }
+  .footer { text-align: center; margin-top: 24px; font-size: 9.5px; color: #1e2030; font-family: 'Outfit', sans-serif; }
   .hidden { display: none; }
+  .gen-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .gen-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+  .gen-box h3 { font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600; color: #a5b4fc; margin-bottom: 8px; }
+  .gen-row { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; flex-wrap: wrap; }
+  .gen-label { font-size: 10.5px; color: var(--muted); font-family: 'Outfit', sans-serif; min-width: 70px; }
+  .gen-count { font-size: 11px; color: #a5b4fc; font-family: 'JetBrains Mono', monospace; background: rgba(99,102,241,0.1); padding: 3px 10px; border-radius: 6px; }
+  .warn { font-size: 10.5px; color: var(--yellow); font-family: 'Outfit', sans-serif; padding: 8px 12px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.15); border-radius: 8px; margin-top: 8px; }
+  .small-input {
+    background: rgba(0,0,0,0.5); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text); font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; padding: 7px 10px; width: 70px; outline: none; text-align: center;
+  }
+  .small-input:focus { border-color: var(--accent); }
+  .checkbox-row { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .checkbox-row input { accent-color: var(--accent); cursor: pointer; }
+  .checkbox-row label { font-size: 11px; color: var(--muted); font-family: 'Outfit', sans-serif; cursor: pointer; }
 
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .stat-clickable { cursor: pointer; transition: all 0.15s; position: relative; }
+  .stat-clickable:hover { background: rgba(255,255,255,0.04); transform: translateY(-1px); }
+  .stat-clickable.active-filter { border-color: rgba(99,102,241,0.4); background: rgba(99,102,241,0.06); }
+  .stat-clickable.active-filter::after {
+    content: ''; position: absolute; bottom: -1px; left: 20%; right: 20%;
+    height: 2px; background: var(--accent); border-radius: 2px;
+  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .spinner {
-    width: 10px; height: 10px; border: 2px solid var(--accent);
-    border-top-color: transparent; border-radius: 50%;
-    animation: spin 0.6s linear infinite; display: inline-block;
-  }
-
-  @media (max-width: 600px) {
-    .stats { grid-template-columns: repeat(2, 1fr); }
-    .header h1 { font-size: 22px; }
-  }
+  .spinner { width: 10px; height: 10px; border: 2px solid var(--accent); border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; display: inline-block; }
+  @media (max-width: 640px) { .stats { grid-template-columns: repeat(2, 1fr); } .gen-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
-
 <div class="wrap">
-  <!-- Header -->
   <div class="header">
     <div class="header-row">
       <div class="logo">D</div>
       <h1>Domain Agent</h1>
     </div>
-    <p>Toplu domain müsaitlik kontrolü — RDAP + DNS</p>
+    <p>Toplu domain üretici & müsaitlik kontrolü — Binlerce domain, saniyeler içinde</p>
   </div>
 
-  <!-- Mode Switch -->
   <div class="mode-center">
     <div class="mode-sw">
-      <button class="mode-b on" id="modeList" onclick="setMode('list')">📋 Liste</button>
+      <button class="mode-b on" id="modeList" onclick="setMode('list')">📋 Liste Gir</button>
+      <button class="mode-b" id="modeGen" onclick="setMode('generate')">⚡ Üretici</button>
       <button class="mode-b" id="modePattern" onclick="setMode('pattern')">🎲 Pattern</button>
-      <button class="mode-b" id="modeAI" onclick="setMode('generate')">🤖 AI Üret</button>
+      <button class="mode-b" id="modeAI" onclick="setMode('ai')">🤖 AI Üret</button>
     </div>
   </div>
 
-  <!-- Input Card -->
-  <div class="card" style="padding:20px; margin-bottom:20px;">
-    <!-- Pattern Generate Section -->
-    <div id="patternSection" class="hidden" style="margin-bottom:16px;">
-      <div class="label">Harf kalıbı seçin veya özel kalıp yazın (C=sessiz, V=sesli)</div>
-      <div class="tld-row" id="patternChips" style="margin-bottom:10px;"></div>
-      <div style="display:flex; gap:8px; margin-top:8px;">
-        <input class="kinput" id="patternCustom" placeholder="Özel kalıp: örn CVCCV, VCCVCV..." style="flex:1;">
-        <input class="kinput" id="patternCount" type="number" value="20" min="1" max="200" placeholder="Adet" style="width:80px;">
-        <button class="btn btn-go" onclick="generateFromPattern()">Üret</button>
+  <div class="card" style="padding:18px; margin-bottom:16px;">
+
+    <!-- GENERATOR SECTION -->
+    <div id="genSection" class="hidden">
+
+      <div class="gen-grid">
+        <!-- Brute Force -->
+        <div class="gen-box">
+          <h3>🔤 Brute Force — Tüm Kombinasyonlar</h3>
+          <div class="gen-row">
+            <span class="gen-label">Uzunluk:</span>
+            <input type="number" class="small-input" id="bruteLen" value="3" min="2" max="6" onchange="updatePreview()">
+            <span class="gen-label">harf</span>
+          </div>
+          <div class="gen-row">
+            <span class="gen-label">Karakterler:</span>
+            <select id="bruteChars" onchange="updatePreview()">
+              <option value="alpha">a-z (harf)</option>
+              <option value="alphanum">a-z + 0-9</option>
+              <option value="vowel">Sesli harfli (CVCVC)</option>
+              <option value="consonant">Sessiz + sesli mix</option>
+            </select>
+          </div>
+          <div class="gen-row">
+            <span class="gen-label">Başlangıç:</span>
+            <input type="text" class="small-input" id="bruteStart" placeholder="a" maxlength="3" style="width:50px" onchange="updatePreview()">
+            <span class="gen-label">Bitiş:</span>
+            <input type="text" class="small-input" id="bruteEnd" placeholder="z" maxlength="3" style="width:50px" onchange="updatePreview()">
+          </div>
+          <div class="gen-row">
+            <span class="gen-label">Limit:</span>
+            <input type="number" class="small-input" id="bruteLimit" value="1000" min="1" max="100000" style="width:90px" onchange="updatePreview()">
+          </div>
+          <div class="checkbox-row">
+            <input type="checkbox" id="bruteRandom" checked onchange="updatePreview()">
+            <label for="bruteRandom">Rastgele sırala</label>
+          </div>
+          <div style="margin-top:8px">
+            <span class="gen-count" id="bruteCount">Toplam: hesaplanıyor...</span>
+          </div>
+          <button class="btn btn-go" style="margin-top:10px;width:100%" onclick="generateBrute()">🔤 Brute Force Üret</button>
+        </div>
+
+        <!-- Pattern / Keyword -->
+        <div class="gen-box">
+          <h3>🎯 Akıllı Üretici — Keyword + Pattern</h3>
+          <div class="gen-row">
+            <span class="gen-label">Kelime:</span>
+            <input type="text" class="kinput" id="kwInput" placeholder="örn: tech, crypto, ai" style="font-size:12px">
+          </div>
+          <div class="gen-row" style="margin-top:4px">
+            <span class="gen-label">Mod:</span>
+            <select id="kwMode">
+              <option value="all">Tüm kombinasyonlar</option>
+              <option value="prefix">Prefix + kelime</option>
+              <option value="suffix">Kelime + suffix</option>
+              <option value="sandwich">Prefix + kelime + suffix</option>
+              <option value="two">İki kelime birleştir</option>
+            </select>
+          </div>
+          <div class="gen-row" style="margin-top:4px">
+            <span class="gen-label">Max uzunluk:</span>
+            <input type="number" class="small-input" id="kwMaxLen" value="12" min="3" max="30" style="width:60px">
+          </div>
+          <div class="gen-row" style="margin-top:4px">
+            <span class="gen-label">Limit:</span>
+            <input type="number" class="small-input" id="kwLimit" value="500" min="1" max="50000" style="width:90px">
+          </div>
+          <div class="checkbox-row" style="margin-top:4px">
+            <input type="checkbox" id="kwNumbers" >
+            <label for="kwNumbers">Sayı ekle (1-99)</label>
+          </div>
+          <div class="checkbox-row">
+            <input type="checkbox" id="kwHyphen">
+            <label for="kwHyphen">Tireli versiyonlar da ekle</label>
+          </div>
+          <button class="btn btn-go" style="margin-top:10px;width:100%" onclick="generateKeyword()">🎯 Akıllı Üret</button>
+        </div>
       </div>
-      <div style="margin-top:8px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        <label style="font-size:11px; color:#4a5568; display:flex; align-items:center; gap:4px; cursor:pointer;">
-          <input type="checkbox" id="patternPrefix"> <span>Ön ek:</span>
-        </label>
-        <input class="kinput" id="prefixInput" placeholder="örn: ai, go, my..." style="width:100px; padding:7px 10px; font-size:11px;">
-        <label style="font-size:11px; color:#4a5568; display:flex; align-items:center; gap:4px; cursor:pointer;">
-          <input type="checkbox" id="patternSuffix"> <span>Son ek:</span>
-        </label>
-        <input class="kinput" id="suffixInput" placeholder="örn: ly, io, fy..." style="width:100px; padding:7px 10px; font-size:11px;">
+
+      <div id="genWarn" class="warn hidden"></div>
+    </div>
+
+    <!-- PATTERN SECTION (from repo version) -->
+    <div id="patternSection" class="hidden">
+      <div class="gen-box" style="margin-bottom:14px;">
+        <h3>🎲 Pattern Üretici — Sessiz/Sesli Kalıp</h3>
+        <div class="label">Harf kalıbı seçin veya özel kalıp yazın (C=sessiz, V=sesli)</div>
+        <div class="tld-row" id="patternChips" style="margin-bottom:10px;"></div>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <input class="kinput" id="patternCustom" placeholder="Özel kalıp: örn CVCCV, VCCVCV..." style="flex:1;">
+          <input class="small-input" id="patternCount" type="number" value="20" min="1" max="200" placeholder="Adet" style="width:80px;">
+          <button class="btn btn-go" onclick="generateFromPattern()">Üret</button>
+        </div>
+        <div style="margin-top:8px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <label style="font-size:11px; color:#4a5568; display:flex; align-items:center; gap:4px; cursor:pointer;">
+            <input type="checkbox" id="patternPrefix"> <span>Ön ek:</span>
+          </label>
+          <input class="kinput" id="prefixInput" placeholder="örn: ai, go, my..." style="width:100px; padding:7px 10px; font-size:11px;">
+          <label style="font-size:11px; color:#4a5568; display:flex; align-items:center; gap:4px; cursor:pointer;">
+            <input type="checkbox" id="patternSuffix"> <span>Son ek:</span>
+          </label>
+          <input class="kinput" id="suffixInput" placeholder="örn: ly, io, fy..." style="width:100px; padding:7px 10px; font-size:11px;">
+        </div>
+      </div>
+      <div id="patternWarn" class="warn hidden"></div>
+    </div>
+
+    <!-- AI GENERATE SECTION (from repo version) -->
+    <div id="aiSection" class="hidden">
+      <div class="gen-box" style="margin-bottom:14px;">
+        <h3>🤖 AI Domain Üretici — Claude ile Yaratıcı İsimler</h3>
+        <div class="label">Anahtar kelime girin, AI yaratıcı domain önerileri üretsin</div>
+        <div style="display:flex; gap:8px;">
+          <input class="kinput" id="aiKeywordInput" placeholder="örn: yapay zeka, fintech, sağlık..." onkeydown="if(event.key==='Enter')generateAIDomains()">
+          <button class="btn btn-go" id="aiGenerateBtn" onclick="generateAIDomains()">🤖 Üret</button>
+        </div>
+        <div style="margin-top:6px;font-size:10px;color:#3a3f50;font-family:'Outfit',sans-serif;">
+          Claude API kullanır — API anahtarı gerektirir (tarayıcıdan doğrudan çalışmayabilir)
+        </div>
       </div>
     </div>
 
-    <!-- AI Generate Section -->
-    <div id="aiSection" class="hidden" style="margin-bottom:16px;">
-      <div class="label">Anahtar kelime girin, AI yaratıcı domain önerileri üretsin</div>
-      <div style="display:flex; gap:8px;">
-        <input class="kinput" id="keywordInput" placeholder="örn: yapay zeka, fintech, sağlık...">
-        <button class="btn btn-go" id="generateBtn" onclick="generateDomains()">Üret</button>
-      </div>
+    <!-- LIST INPUT -->
+    <div id="listSection">
+      <div class="label">Her satıra bir domain · TLD'siz yazarsanız seçili uzantılar eklenir</div>
+      <textarea id="domainInput" rows="7" placeholder="google.com&#10;acme-startup.com&#10;my-awesome-project.io&#10;xyznotexist12345.com&#10;blockchain-ai-saas.dev"></textarea>
     </div>
 
-    <div class="label">Her satıra bir domain · TLD'siz yazarsanız seçili uzantılar eklenir</div>
-    <textarea id="domainInput" rows="7" placeholder="google.com&#10;acme-startup.com&#10;my-awesome-project.io&#10;xyznotexist12345.com&#10;blockchain-ai-saas.dev&#10;turkiye-dijital.net"></textarea>
-
-    <!-- TLD Chips -->
-    <div style="margin-top:14px;">
-      <div class="label-sm">Uzantılar (TLD'siz satırlar için)</div>
+    <!-- SHARED: TLD + Actions -->
+    <div style="margin-top:12px;">
+      <div class="label-sm">TLD uzantıları</div>
       <div class="tld-row" id="tldRow"></div>
     </div>
 
-    <!-- Actions -->
-    <div class="actions">
+    <!-- Speed Controls -->
+    <div style="margin-top:10px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:5px;">
+        <span class="gen-label" style="min-width:auto;">⚡ Hız:</span>
+        <select id="speedMode" style="font-size:10.5px;padding:4px 8px;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:5px;color:#94a3b8;font-family:'Outfit',sans-serif;cursor:pointer;outline:none;">
+          <option value="slow">Yavaş (2 paralel, 800ms)</option>
+          <option value="normal" selected>Normal (5 paralel, 400ms)</option>
+          <option value="fast">Hızlı (10 paralel, 200ms)</option>
+          <option value="turbo">Turbo (15 paralel, 100ms)</option>
+          <option value="max">Maksimum (25 paralel, 50ms)</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;gap:5px;">
+        <span class="gen-label" style="min-width:auto;">🌐 DNS:</span>
+        <select id="dnsMode" style="font-size:10.5px;padding:4px 8px;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:5px;color:#94a3b8;font-family:'Outfit',sans-serif;cursor:pointer;outline:none;">
+          <option value="auto" selected>Otomatik (RDAP → Google → CF)</option>
+          <option value="dns_only">Sadece DNS (hızlı, daha az detay)</option>
+          <option value="rdap_only">Sadece RDAP (yavaş, en detaylı)</option>
+        </select>
+      </div>
+      <div class="checkbox-row" style="margin-left:4px;">
+        <input type="checkbox" id="autoTmCheck" checked>
+        <label for="autoTmCheck" style="font-size:10.5px;">🏛️ Müsaitlerin markasını otomatik sorgula</label>
+      </div>
+    </div>
+
+    <div class="actions" style="margin-top:10px;">
       <button class="btn btn-go" id="startBtn" onclick="startCheck()">🔍 Kontrol Başlat</button>
       <button class="btn btn-stop hidden" id="stopBtn" onclick="stopCheck()">⏹ Durdur</button>
       <button class="btn btn-dim" onclick="loadSample()">Örnek Yükle</button>
+      <span id="domainCountBadge" style="font-size:11px;color:#a5b4fc;font-family:'Outfit',sans-serif"></span>
       <button class="btn btn-dim hidden" id="csvBtn" onclick="exportCSV()" style="margin-left:auto;">📥 CSV</button>
       <button class="btn btn-dim hidden" id="copyBtn" onclick="copyAvailable()">📋 Müsaitleri Kopyala</button>
     </div>
 
-    <!-- Progress -->
-    <div id="progressSection" class="hidden" style="margin-top:14px;">
-      <div style="display:flex; justify-content:space-between; font-size:11px; color:#4a5568; margin-bottom:5px;">
-        <span style="display:flex; align-items:center; gap:6px;">
-          <span class="spinner"></span> Kontrol ediliyor...
-        </span>
+    <div id="progressSection" class="hidden" style="margin-top:12px;">
+      <div style="display:flex; justify-content:space-between; font-size:10.5px; color:#4a5568; margin-bottom:4px;">
+        <span style="display:flex;align-items:center;gap:5px;"><span class="spinner"></span> Kontrol ediliyor...</span>
         <span id="progressText">0 / 0</span>
       </div>
       <div class="bar-track"><div class="bar-fill" id="progressBar" style="width:0%"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:#3a3f50;margin-top:3px;">
+        <span id="speedText"></span>
+        <span id="etaText"></span>
+      </div>
     </div>
   </div>
 
-  <!-- Stats -->
   <div class="stats hidden" id="statsSection">
-    <div class="card stat-card"><div class="stat-num" id="statAll" style="color:#6366f1">0</div><div class="stat-label">Toplam</div></div>
-    <div class="card stat-card"><div class="stat-num" id="statAvail" style="color:#10b981">0</div><div class="stat-label">Müsait</div></div>
-    <div class="card stat-card"><div class="stat-num" id="statTaken" style="color:#ef4444">0</div><div class="stat-label">Kayıtlı</div></div>
-    <div class="card stat-card"><div class="stat-num" id="statError" style="color:#f59e0b">0</div><div class="stat-label">Belirsiz</div></div>
+    <div class="card stat-card stat-clickable" onclick="setFilter('all')"><div class="stat-num" id="statAll" style="color:#6366f1">0</div><div class="stat-label">Toplam</div></div>
+    <div class="card stat-card stat-clickable" onclick="setFilter('available')"><div class="stat-num" id="statAvail" style="color:#10b981">0</div><div class="stat-label">Müsait</div></div>
+    <div class="card stat-card stat-clickable" onclick="setFilter('taken')"><div class="stat-num" id="statTaken" style="color:#ef4444">0</div><div class="stat-label">Kayıtlı</div></div>
+    <div class="card stat-card stat-clickable" onclick="setFilter('error')"><div class="stat-num" id="statError" style="color:#f59e0b">0</div><div class="stat-label">Belirsiz</div></div>
   </div>
 
-  <!-- Results -->
   <div class="card hidden" id="resultsCard" style="overflow:hidden;">
-    <div class="tabs" id="filterTabs"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-bottom:1px solid rgba(255,255,255,0.05);flex-wrap:wrap;gap:6px;">
+      <div class="tabs" id="filterTabs" style="padding:0;border:none;display:flex;gap:3px;flex-wrap:wrap;"></div>
+      <div style="display:flex;gap:6px;align-items:center;" id="resultActions">
+        <select id="sortSelect" onchange="renderResults()" style="font-size:10px;padding:4px 8px;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:5px;color:#94a3b8;font-family:'Outfit',sans-serif;cursor:pointer;outline:none;">
+          <option value="default">Sıralama: Varsayılan</option>
+          <option value="expiry_asc">📅 Bitiş tarihi (en yakın)</option>
+          <option value="expiry_desc">📅 Bitiş tarihi (en uzak)</option>
+          <option value="reg_asc">📅 Kayıt tarihi (en eski)</option>
+          <option value="alpha">🔤 A-Z</option>
+          <option value="alpha_desc">🔤 Z-A</option>
+          <option value="short">📏 En kısa</option>
+        </select>
+        <button class="btn btn-dim hidden" id="retryBtn" onclick="retryErrors()" style="font-size:10.5px;padding:5px 10px;">🔄 Belirsizleri Tekrar Sorgula</button>
+        <button class="btn btn-dim hidden" id="copyFilteredBtn" onclick="copyFiltered()" style="font-size:10.5px;padding:5px 10px;">📋 Listeyi Kopyala</button>
+      </div>
+    </div>
+    <div id="resultInfo" style="padding:6px 14px;font-size:10px;color:#4a5568;text-align:center;font-family:'Outfit',sans-serif;border-bottom:1px solid rgba(255,255,255,0.03);display:none;"></div>
     <div class="scroll-box" id="resultsList"></div>
+    <div id="loadMoreWrap" style="display:none;text-align:center;padding:10px;">
+      <button class="btn btn-dim" onclick="showMore()" id="loadMoreBtn" style="font-size:10.5px;">Daha fazla göster</button>
+    </div>
   </div>
 
-  <div class="footer">RDAP + Google DNS + Cloudflare DNS · 3 katmanlı kontrol · Kesin bilgi için registrar sorgulayın</div>
+  <!-- TRADEMARK SEARCH SECTION -->
+  <div class="card" style="padding:18px; margin-top:16px;" id="trademarkSection">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+      <span style="font-size:18px;">🏛️</span>
+      <h2 style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;color:#e2e8f0;margin:0;">Marka Sorgulama</h2>
+      <span style="font-size:10px;color:#64748b;font-family:'Outfit',sans-serif;">WIPO Global Brand DB + Türkpatent + USPTO + EUIPO</span>
+    </div>
+    <div class="label">Marka adı girin — Türkiye dahil 60+ ülke marka veritabanında aranır</div>
+    <div style="display:flex;gap:8px;">
+      <input class="kinput" id="tmInput" placeholder="örn: TechNova, AcmeCloud..." style="font-size:12px" onkeydown="if(event.key==='Enter')searchTrademark()">
+      <select id="tmSource" style="min-width:120px;">
+        <option value="all">Tüm Kaynaklar</option>
+        <option value="TR">Türkiye (Türkpatent)</option>
+        <option value="US">ABD (USPTO)</option>
+        <option value="EM">AB (EUIPO)</option>
+        <option value="WO">WIPO Madrid</option>
+      </select>
+      <button class="btn btn-go" onclick="searchTrademark()" id="tmSearchBtn">🔍 Ara</button>
+    </div>
+    <div id="tmLoading" class="hidden" style="padding:12px;text-align:center;font-size:11px;color:#a5b4fc;">
+      <span class="spinner"></span> Marka veritabanları sorgulanıyor...
+    </div>
+    <div id="tmResults" style="margin-top:12px;display:none;">
+      <div id="tmSummary" style="padding:8px 12px;border-radius:8px;font-size:11px;font-family:'Outfit',sans-serif;margin-bottom:8px;"></div>
+      <div id="tmList" class="scroll-box" style="max-height:300px;"></div>
+    </div>
+    <div id="tmLinks" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+      <span class="label" style="margin:0;font-size:10px;color:#3a3f50;">Manuel kontrol:</span>
+      <a href="https://online.turkpatent.gov.tr/trademark-search/pub/trademark_search" target="_blank" style="font-size:10px;color:#a5b4fc;text-decoration:none;font-family:'Outfit',sans-serif;">Türkpatent ↗</a>
+      <a href="https://branddb.wipo.int/" target="_blank" style="font-size:10px;color:#a5b4fc;text-decoration:none;font-family:'Outfit',sans-serif;">WIPO ↗</a>
+      <a href="https://tmsearch.uspto.gov/" target="_blank" style="font-size:10px;color:#a5b4fc;text-decoration:none;font-family:'Outfit',sans-serif;">USPTO ↗</a>
+      <a href="https://euipo.europa.eu/eSearch/" target="_blank" style="font-size:10px;color:#a5b4fc;text-decoration:none;font-family:'Outfit',sans-serif;">EUIPO ↗</a>
+    </div>
+  </div>
+
+  <div class="footer">RDAP (registry) + Google DNS + Cloudflare DNS · WIPO Global Brand Database · Türkpatent + USPTO + EUIPO</div>
 </div>
 
 <script>
+// ===================== STATE =====================
 const TLD_OPTIONS = [".com",".net",".org",".io",".dev",".co",".app",".xyz",".ai",".tech",".me",".info"];
 let selectedTLDs = [".com"];
 let results = [];
 let currentFilter = "all";
 let aborted = false;
 let checking = false;
+let checkStartTime = 0;
 
-// Init TLD chips
+// ===================== TLD CHIPS =====================
 const tldRow = document.getElementById("tldRow");
 TLD_OPTIONS.forEach(tld => {
   const chip = document.createElement("span");
   chip.className = "tld-chip" + (selectedTLDs.includes(tld) ? " on" : "");
   chip.textContent = tld;
   chip.onclick = () => {
-    if (selectedTLDs.includes(tld)) {
-      selectedTLDs = selectedTLDs.filter(t => t !== tld);
-      chip.classList.remove("on");
-    } else {
-      selectedTLDs.push(tld);
-      chip.classList.add("on");
-    }
+    if (selectedTLDs.includes(tld)) { selectedTLDs = selectedTLDs.filter(t => t !== tld); chip.classList.remove("on"); }
+    else { selectedTLDs.push(tld); chip.classList.add("on"); }
   };
   tldRow.appendChild(chip);
 });
 
+// ===================== MODE =====================
 function setMode(m) {
   document.getElementById("modeList").className = "mode-b" + (m === "list" ? " on" : "");
+  document.getElementById("modeGen").className = "mode-b" + (m === "generate" ? " on" : "");
   document.getElementById("modePattern").className = "mode-b" + (m === "pattern" ? " on" : "");
-  document.getElementById("modeAI").className = "mode-b" + (m === "generate" ? " on" : "");
+  document.getElementById("modeAI").className = "mode-b" + (m === "ai" ? " on" : "");
+  document.getElementById("genSection").className = m === "generate" ? "" : "hidden";
   document.getElementById("patternSection").className = m === "pattern" ? "" : "hidden";
-  document.getElementById("aiSection").className = m === "generate" ? "" : "hidden";
+  document.getElementById("aiSection").className = m === "ai" ? "" : "hidden";
+  document.getElementById("listSection").className = m === "list" ? "" : "hidden";
+  if (m === "generate") updatePreview();
 }
 
-// Pattern generator
-const VOWELS = "aeiouy";
-const CONSONANTS = "bcdfghjklmnprstvwxz";
+function loadSample() {
+  document.getElementById("domainInput").value = "google.com\nacme-startup.com\nmy-awesome-project.io\nxyznotexist12345.com\nblockchain-ai-saas.dev\nturkiye-dijital.net";
+  updateDomainCount();
+}
+
+// ===================== BRUTE FORCE GENERATOR =====================
+const VOWELS = "aeiou";
+const CONSONANTS = "bcdfghjklmnpqrstvwxyz";
+
+function getBruteTotal() {
+  const len = parseInt(document.getElementById("bruteLen").value) || 3;
+  const mode = document.getElementById("bruteChars").value;
+  if (mode === "alpha") return Math.pow(26, len);
+  if (mode === "alphanum") return Math.pow(36, len);
+  if (mode === "vowel") {
+    let c = 0, v = 0;
+    for (let i = 0; i < len; i++) { if (i % 2 === 0) c++; else v++; }
+    return Math.pow(21, c) * Math.pow(5, v);
+  }
+  if (mode === "consonant") {
+    let c = 0, v = 0;
+    for (let i = 0; i < len; i++) { if (i % 2 === 0) v++; else c++; }
+    return Math.pow(5, v) * Math.pow(21, c);
+  }
+  return Math.pow(26, len);
+}
+
+function updatePreview() {
+  const total = getBruteTotal();
+  const limit = parseInt(document.getElementById("bruteLimit").value) || 1000;
+  const el = document.getElementById("bruteCount");
+  el.textContent = `Toplam: ${total.toLocaleString("tr-TR")} kombinasyon → ${Math.min(limit, total).toLocaleString("tr-TR")} üretilecek`;
+}
+
+function* bruteForceGenerator(len, charMode, startStr, endStr) {
+  function getCharset(pos) {
+    if (charMode === "alpha") return "abcdefghijklmnopqrstuvwxyz";
+    if (charMode === "alphanum") return "abcdefghijklmnopqrstuvwxyz0123456789";
+    if (charMode === "vowel") return pos % 2 === 0 ? CONSONANTS : VOWELS;
+    if (charMode === "consonant") return pos % 2 === 0 ? VOWELS : CONSONANTS;
+    return "abcdefghijklmnopqrstuvwxyz";
+  }
+
+  const charsets = [];
+  for (let i = 0; i < len; i++) charsets.push(getCharset(i));
+
+  const indices = new Array(len).fill(0);
+
+  if (startStr) {
+    for (let i = 0; i < Math.min(startStr.length, len); i++) {
+      const idx = charsets[i].indexOf(startStr[i]);
+      if (idx >= 0) indices[i] = idx;
+    }
+  }
+
+  const endIndices = charsets.map(cs => cs.length - 1);
+  if (endStr) {
+    for (let i = 0; i < Math.min(endStr.length, len); i++) {
+      const idx = charsets[i].indexOf(endStr[i]);
+      if (idx >= 0) endIndices[i] = idx;
+    }
+  }
+
+  while (true) {
+    let word = "";
+    for (let i = 0; i < len; i++) word += charsets[i][indices[i]];
+    yield word;
+
+    let atEnd = true;
+    for (let i = 0; i < len; i++) {
+      if (indices[i] < endIndices[i]) { atEnd = false; break; }
+      if (indices[i] > endIndices[i]) break;
+    }
+    if (atEnd) return;
+
+    let carry = true;
+    for (let i = len - 1; i >= 0 && carry; i--) {
+      indices[i]++;
+      if (indices[i] < charsets[i].length) { carry = false; }
+      else { indices[i] = 0; }
+    }
+    if (carry) return;
+  }
+}
+
+function generateBrute() {
+  const len = parseInt(document.getElementById("bruteLen").value) || 3;
+  const charMode = document.getElementById("bruteChars").value;
+  const limit = parseInt(document.getElementById("bruteLimit").value) || 1000;
+  const startStr = document.getElementById("bruteStart").value.toLowerCase().trim();
+  const endStr = document.getElementById("bruteEnd").value.toLowerCase().trim();
+  const randomize = document.getElementById("bruteRandom").checked;
+
+  const total = getBruteTotal();
+  const warn = document.getElementById("genWarn");
+
+  if (total > 1000000 && limit > 50000) {
+    warn.textContent = `⚠️ ${total.toLocaleString("tr-TR")} kombinasyon var. Limit ${limit.toLocaleString("tr-TR")} olarak ayarlı. Çok fazla sorgu rate-limit'e takılabilir.`;
+    warn.classList.remove("hidden");
+  } else {
+    warn.classList.add("hidden");
+  }
+
+  let collected = [];
+  const gen = bruteForceGenerator(len, charMode, startStr, endStr);
+
+  if (randomize && total <= 500000) {
+    const all = [];
+    let count = 0;
+    for (const word of gen) {
+      all.push(word);
+      count++;
+      if (count >= 500000) break;
+    }
+    for (let i = all.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [all[i], all[j]] = [all[j], all[i]];
+    }
+    collected = all.slice(0, limit);
+  } else if (randomize) {
+    let count = 0;
+    collected = [];
+    for (const word of gen) {
+      count++;
+      if (collected.length < limit) {
+        collected.push(word);
+      } else {
+        const r = Math.floor(Math.random() * count);
+        if (r < limit) collected[r] = word;
+      }
+      if (count >= total) break;
+    }
+  } else {
+    for (const word of gen) {
+      collected.push(word);
+      if (collected.length >= limit) break;
+    }
+  }
+
+  document.getElementById("domainInput").value = collected.join("\n");
+  setMode("list");
+  updateDomainCount();
+}
+
+// ===================== KEYWORD GENERATOR =====================
+function generateKeyword() {
+  const kw = document.getElementById("kwInput").value.trim().toLowerCase().replace(/[^a-z0-9\s,]/g, "");
+  if (!kw) return;
+
+  const mode = document.getElementById("kwMode").value;
+  const maxLen = parseInt(document.getElementById("kwMaxLen").value) || 12;
+  const limit = parseInt(document.getElementById("kwLimit").value) || 500;
+  const addNumbers = document.getElementById("kwNumbers").checked;
+  const addHyphens = document.getElementById("kwHyphen").checked;
+
+  const words = kw.split(/[\s,]+/).filter(w => w.length > 0);
+  const base = words[0];
+  const extras = words.slice(1);
+
+  const prefixes = ["go","get","try","use","my","the","hey","one","all","pro","super","hyper","ultra","mega","neo","nova","zen","flux","vibe","dash","snap","swift","prime","next","fast","easy","smart","deep","open","true","pure","top","max","hi","up","on","re","be","do","no","so","we","ok","mr","el","la","de"];
+  const suffixes = ["ly","io","fy","hub","lab","box","pad","app","now","go","up","ify","ist","ful","zen","ai","hq","dev","base","cloud","flow","spot","nest","wave","dock","mint","link","sync","pulse","core","shift","stack","kit","line","path","way","x","co","zone","ify","oid","ium","ary","ery","ory","ica","eo","ix","ox","us","is","er","ed","en","or","ar","al","el","ia","ya","ik","ak","ok","uk"];
+  const middles = ["and","or","to","for","in","on","at","by","of","is","it","no","so","do","go","be","me","we","up","my"];
+
+  const names = new Set();
+  const add = (n) => {
+    const clean = n.replace(/[^a-z0-9-]/g, "");
+    if (clean.length >= 2 && clean.length <= maxLen) names.add(clean);
+  };
+
+  if (mode === "all" || mode === "prefix") {
+    prefixes.forEach(p => {
+      add(p + base);
+      if (addHyphens) add(p + "-" + base);
+    });
+  }
+  if (mode === "all" || mode === "suffix") {
+    suffixes.forEach(s => {
+      add(base + s);
+      if (addHyphens) add(base + "-" + s);
+    });
+  }
+  if (mode === "all" || mode === "sandwich") {
+    prefixes.forEach(p => {
+      suffixes.forEach(s => {
+        add(p + base + s);
+        if (addHyphens) add(p + "-" + base + "-" + s);
+      });
+    });
+  }
+  if (mode === "all" || mode === "two") {
+    extras.forEach(w2 => {
+      add(base + w2); add(w2 + base);
+      if (addHyphens) { add(base + "-" + w2); add(w2 + "-" + base); }
+      prefixes.slice(0, 15).forEach(p => add(p + base + w2));
+      suffixes.slice(0, 15).forEach(s => add(base + w2 + s));
+    });
+    if (extras.length > 0) {
+      middles.forEach(m => {
+        extras.forEach(w2 => add(base + m + w2));
+      });
+    }
+    prefixes.forEach(p => extras.forEach(w2 => {
+      add(p + base + w2);
+      add(p + w2 + base);
+    }));
+  }
+
+  if (addNumbers) {
+    const existing = [...names].slice(0, 100);
+    for (let n = 1; n <= 99; n++) {
+      add(base + n);
+      if (n <= 9) existing.slice(0, 20).forEach(e => add(e + n));
+    }
+  }
+
+  if (base.length > 3) {
+    const sh = base.slice(0, 3);
+    suffixes.slice(0, 20).forEach(s => add(sh + s));
+    prefixes.slice(0, 10).forEach(p => add(p + sh));
+  }
+  if (base.length > 4) {
+    const sh = base.slice(0, 4);
+    suffixes.slice(0, 20).forEach(s => add(sh + s));
+  }
+
+  const noVowel = base.replace(/[aeiou]/g, "");
+  if (noVowel.length >= 2 && noVowel !== base) {
+    add(noVowel);
+    suffixes.slice(0, 10).forEach(s => add(noVowel + s));
+    prefixes.slice(0, 10).forEach(p => add(p + noVowel));
+  }
+
+  add(base + base);
+  add(base + base.split("").reverse().join(""));
+
+  let arr = [...names];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  arr = arr.slice(0, limit);
+
+  const warn = document.getElementById("genWarn");
+  warn.textContent = `✅ ${arr.length.toLocaleString("tr-TR")} domain üretildi. "Kontrol Başlat" ile sorgulamaya başlayabilirsiniz.`;
+  warn.classList.remove("hidden");
+
+  document.getElementById("domainInput").value = arr.join("\n");
+  setMode("list");
+  updateDomainCount();
+}
+
+// ===================== PATTERN GENERATOR (C/V Kalıp) =====================
+const PATTERN_VOWELS = "aeiouy";
+const PATTERN_CONSONANTS = "bcdfghjklmnprstvwxz";
 const PATTERNS = [
   { pattern: "CVCVC", label: "CVCVC", desc: "5 harf klasik" },
   { pattern: "CVCCV", label: "CVCCV", desc: "5 harf akıcı" },
@@ -363,7 +739,6 @@ const PATTERNS = [
 
 let selectedPatterns = ["CVCVC"];
 
-// Init pattern chips
 const patternChips = document.getElementById("patternChips");
 PATTERNS.forEach(p => {
   const chip = document.createElement("span");
@@ -385,8 +760,8 @@ PATTERNS.forEach(p => {
 function genFromPattern(pat) {
   let word = "";
   for (const ch of pat.toUpperCase()) {
-    if (ch === "V") word += VOWELS[Math.floor(Math.random() * VOWELS.length)];
-    else if (ch === "C") word += CONSONANTS[Math.floor(Math.random() * CONSONANTS.length)];
+    if (ch === "V") word += PATTERN_VOWELS[Math.floor(Math.random() * PATTERN_VOWELS.length)];
+    else if (ch === "C") word += PATTERN_CONSONANTS[Math.floor(Math.random() * PATTERN_CONSONANTS.length)];
   }
   return word;
 }
@@ -416,224 +791,14 @@ function generateFromPattern() {
 
   document.getElementById("domainInput").value = [...names].join("\n");
   setMode("list");
+  updateDomainCount();
 }
 
-function loadSample() {
-  document.getElementById("domainInput").value = "google.com\nacme-startup.com\nmy-awesome-project.io\nxyznotexist12345.com\nblockchain-ai-saas.dev\nturkiye-dijital.net";
-}
-
-function cleanDomain(d) {
-  return d.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "").replace(/\s+/g, "");
-}
-
-async function checkDomain(domain) {
-  const clean = cleanDomain(domain);
-  if (!clean || clean.length < 3 || !clean.includes(".")) {
-    return { domain: clean || domain, status: "error", info: "Geçersiz domain formatı" };
-  }
-
-  // 1) RDAP
-  try {
-    const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 8000);
-    const resp = await fetch("https://rdap.org/domain/" + clean, {
-      signal: ctrl.signal,
-      headers: { "Accept": "application/rdap+json,application/json" }
-    });
-    clearTimeout(t);
-
-    if (resp.status === 404) return { domain: clean, status: "available", info: "✓ Müsait — RDAP kaydı bulunamadı" };
-    if (resp.ok) {
-      try {
-        const data = await resp.json();
-        const events = data.events || [];
-        const reg = events.find(e => e.eventAction === "registration");
-        const exp = events.find(e => e.eventAction === "expiration");
-        const ns = (data.nameservers || []).map(n => n.ldhName || "").filter(Boolean).slice(0, 2).join(", ");
-        let info = "Kayıtlı (RDAP)";
-        const p = [];
-        if (reg) p.push("Kayıt: " + new Date(reg.eventDate).toLocaleDateString("tr-TR"));
-        if (exp) p.push("Bitiş: " + new Date(exp.eventDate).toLocaleDateString("tr-TR"));
-        if (ns) p.push("NS: " + ns);
-        if (p.length) info += " · " + p.join(" · ");
-        return { domain: clean, status: "taken", info };
-      } catch { return { domain: clean, status: "taken", info: "Kayıtlı (RDAP)" }; }
-    }
-  } catch {}
-
-  // 2) Google DNS
-  try {
-    const ctrl2 = new AbortController();
-    const t2 = setTimeout(() => ctrl2.abort(), 6000);
-    const dr = await fetch("https://dns.google/resolve?name=" + encodeURIComponent(clean) + "&type=A", { signal: ctrl2.signal });
-    clearTimeout(t2);
-    if (dr.ok) {
-      const dd = await dr.json();
-      if (dd.Status === 3) return { domain: clean, status: "available", info: "✓ Muhtemelen müsait — NXDOMAIN" };
-      if (dd.Answer && dd.Answer.length > 0) {
-        const ip = (dd.Answer.find(a => a.type === 1) || {}).data || "";
-        return { domain: clean, status: "taken", info: "Kayıtlı (DNS)" + (ip ? " · IP: " + ip : "") };
-      }
-      if (dd.Authority && dd.Authority.length > 0) return { domain: clean, status: "taken", info: "Kayıtlı (NS mevcut)" };
-      if (dd.Status === 0 && !dd.Answer) return { domain: clean, status: "available", info: "✓ Muhtemelen müsait — DNS boş" };
-    }
-  } catch {}
-
-  // 3) Cloudflare DNS
-  try {
-    const ctrl3 = new AbortController();
-    const t3 = setTimeout(() => ctrl3.abort(), 5000);
-    const cr = await fetch("https://cloudflare-dns.com/dns-query?name=" + encodeURIComponent(clean) + "&type=A", {
-      signal: ctrl3.signal, headers: { "Accept": "application/dns-json" }
-    });
-    clearTimeout(t3);
-    if (cr.ok) {
-      const cd = await cr.json();
-      if (cd.Status === 3) return { domain: clean, status: "available", info: "✓ Muhtemelen müsait — NXDOMAIN (CF)" };
-      if (cd.Answer && cd.Answer.length > 0) return { domain: clean, status: "taken", info: "Kayıtlı (Cloudflare DNS)" };
-    }
-  } catch {}
-
-  return { domain: clean, status: "error", info: "Kontrol edilemedi" };
-}
-
-async function startCheck() {
-  const lines = document.getElementById("domainInput").value.split("\n").map(d => d.trim()).filter(d => d.length > 0);
-  if (!lines.length) return;
-
-  let allDomains = [];
-  lines.forEach(line => {
-    if (/\.[a-z]{2,}$/i.test(line)) {
-      allDomains.push(line);
-    } else {
-      selectedTLDs.forEach(tld => allDomains.push(line + tld));
-    }
-  });
-  allDomains = [...new Set(allDomains)];
-
-  checking = true; aborted = false; results = []; currentFilter = "all";
-  document.getElementById("startBtn").classList.add("hidden");
-  document.getElementById("stopBtn").classList.remove("hidden");
-  document.getElementById("progressSection").classList.remove("hidden");
-  document.getElementById("csvBtn").classList.add("hidden");
-  document.getElementById("copyBtn").classList.add("hidden");
-  document.getElementById("statsSection").classList.add("hidden");
-  document.getElementById("resultsCard").classList.add("hidden");
-  document.getElementById("resultsList").innerHTML = "";
-
-  const total = allDomains.length;
-  const batch = 3;
-
-  for (let i = 0; i < total; i += batch) {
-    if (aborted) break;
-    const group = allDomains.slice(i, i + batch);
-    const res = await Promise.all(group.map(checkDomain));
-    results.push(...res);
-    const done = Math.min(i + batch, total);
-    document.getElementById("progressText").textContent = done + " / " + total;
-    document.getElementById("progressBar").style.width = ((done / total) * 100) + "%";
-    renderResults();
-    if (i + batch < total && !aborted) await new Promise(r => setTimeout(r, 400));
-  }
-
-  checking = false;
-  document.getElementById("startBtn").classList.remove("hidden");
-  document.getElementById("stopBtn").classList.add("hidden");
-  document.getElementById("progressSection").classList.add("hidden");
-  if (results.length) {
-    document.getElementById("csvBtn").classList.remove("hidden");
-    if (results.some(r => r.status === "available")) document.getElementById("copyBtn").classList.remove("hidden");
-  }
-}
-
-function stopCheck() { aborted = true; }
-
-function renderResults() {
-  if (!results.length) return;
-
-  const counts = {
-    all: results.length,
-    available: results.filter(r => r.status === "available").length,
-    taken: results.filter(r => r.status === "taken").length,
-    error: results.filter(r => r.status === "error").length,
-  };
-
-  // Stats
-  document.getElementById("statsSection").classList.remove("hidden");
-  document.getElementById("statAll").textContent = counts.all;
-  document.getElementById("statAvail").textContent = counts.available;
-  document.getElementById("statTaken").textContent = counts.taken;
-  document.getElementById("statError").textContent = counts.error;
-
-  // Tabs
-  document.getElementById("resultsCard").classList.remove("hidden");
-  const tabs = document.getElementById("filterTabs");
-  tabs.innerHTML = "";
-  [
-    { key: "all", label: "Tümü " + counts.all },
-    { key: "available", label: "Müsait " + counts.available },
-    { key: "taken", label: "Kayıtlı " + counts.taken },
-    { key: "error", label: "Belirsiz " + counts.error },
-  ].forEach(f => {
-    const btn = document.createElement("button");
-    btn.className = "tab" + (currentFilter === f.key ? " on" : "");
-    btn.textContent = f.label;
-    btn.onclick = () => { currentFilter = f.key; renderResults(); };
-    tabs.appendChild(btn);
-  });
-
-  // Rows
-  const colors = {
-    available: { dot: "#10b981", bg: "#0d2818", border: "#10b981", text: "#34d399", label: "MÜSAİT" },
-    taken: { dot: "#ef4444", bg: "#2d1215", border: "#ef4444", text: "#f87171", label: "KAYITLI" },
-    error: { dot: "#f59e0b", bg: "#2d2305", border: "#f59e0b", text: "#fbbf24", label: "BELİRSİZ" },
-  };
-
-  const filtered = results.filter(r => currentFilter === "all" || r.status === currentFilter);
-  const list = document.getElementById("resultsList");
-  list.innerHTML = "";
-
-  filtered.forEach(r => {
-    const c = colors[r.status];
-    const row = document.createElement("div");
-    row.className = "row";
-    row.innerHTML = `
-      <div class="dot" style="background:${c.dot}"></div>
-      <div style="flex:1;min-width:0">
-        <div class="row-domain">${r.domain}</div>
-        <div class="row-info">${r.info}</div>
-      </div>
-      <div class="badge" style="background:${c.bg};color:${c.text};border:1px solid ${c.border}25">${c.label}</div>
-    `;
-    list.appendChild(row);
-  });
-}
-
-function exportCSV() {
-  const bom = "\uFEFF";
-  const csv = bom + "Domain,Durum,Detay\n" + results.map(r =>
-    '"' + r.domain + '","' + (r.status === "available" ? "Müsait" : r.status === "taken" ? "Kayıtlı" : "Belirsiz") + '","' + r.info.replace(/"/g, '""') + '"'
-  ).join("\n");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url; a.download = "domain-sonuclari.csv"; a.click();
-  URL.revokeObjectURL(url);
-}
-
-function copyAvailable() {
-  const avail = results.filter(r => r.status === "available").map(r => r.domain).join("\n");
-  if (avail) navigator.clipboard.writeText(avail).then(() => {
-    const btn = document.getElementById("copyBtn");
-    btn.textContent = "✓ Kopyalandı!";
-    setTimeout(() => btn.textContent = "📋 Müsaitleri Kopyala", 1500);
-  });
-}
-
-async function generateDomains() {
-  const kw = document.getElementById("keywordInput").value.trim();
+// ===================== AI DOMAIN GENERATOR (Claude API) =====================
+async function generateAIDomains() {
+  const kw = document.getElementById("aiKeywordInput").value.trim();
   if (!kw) return;
-  const btn = document.getElementById("generateBtn");
+  const btn = document.getElementById("aiGenerateBtn");
   btn.disabled = true; btn.textContent = "Üretiliyor...";
   try {
     const resp = await fetch("https://api.anthropic.com/v1/messages", {
@@ -651,13 +816,897 @@ async function generateDomains() {
     if (names.length) {
       document.getElementById("domainInput").value = names.join("\n");
       setMode("list");
+      updateDomainCount();
     }
   } catch (e) { console.error(e); }
-  btn.disabled = false; btn.textContent = "Üret";
+  btn.disabled = false; btn.textContent = "🤖 Üret";
 }
 
-// Enter key for keyword
-document.getElementById("keywordInput").addEventListener("keydown", e => { if (e.key === "Enter") generateDomains(); });
+// ===================== DOMAIN COUNT =====================
+function updateDomainCount() {
+  const lines = document.getElementById("domainInput").value.split("\n").filter(l => l.trim().length > 0);
+  let total = 0;
+  lines.forEach(line => {
+    if (/\.[a-z]{2,}$/i.test(line.trim())) total += 1;
+    else total += selectedTLDs.length;
+  });
+  document.getElementById("domainCountBadge").textContent = total > 0 ? `${total.toLocaleString("tr-TR")} domain sorgulanacak` : "";
+}
+
+document.getElementById("domainInput").addEventListener("input", updateDomainCount);
+
+// ===================== DOMAIN CHECKER =====================
+function cleanDomain(d) {
+  return d.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "").replace(/\s+/g, "");
+}
+
+async function checkDomain(domain) {
+  const clean = cleanDomain(domain);
+  if (!clean || clean.length < 2 || !clean.includes(".")) return { domain: clean || domain, status: "error", info: "Geçersiz", expiryDate: null, regDate: null };
+
+  const dnsMode = document.getElementById("dnsMode").value;
+
+  if (dnsMode === "dns_only") {
+    return await dnsOnlyCheck(clean);
+  }
+
+  const rdapUrls = [
+    "https://rdap.org/domain/" + clean,
+    "https://rdap.verisign.com/com/v1/domain/" + clean,
+  ];
+
+  const tld = clean.split(".").pop();
+  let rdapUrl = rdapUrls[0];
+  if (tld === "com" || tld === "net") rdapUrl = rdapUrls[1];
+
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 8000);
+    const resp = await fetch(rdapUrl, {
+      signal: ctrl.signal,
+      headers: { "Accept": "application/rdap+json,application/json" }
+    });
+    clearTimeout(t);
+
+    if (resp.status === 404) {
+      const dnsConfirm = await quickDnsCheck(clean);
+      if (dnsConfirm === "nxdomain") {
+        return { domain: clean, status: "available", info: "✓ Müsait — Kayıt bulunamadı (RDAP + DNS doğrulandı)", expiryDate: null, regDate: null };
+      }
+      return { domain: clean, status: "available", info: "✓ Müsait — RDAP'ta kayıt yok", expiryDate: null, regDate: null };
+    }
+
+    if (resp.ok) {
+      try {
+        const data = await resp.json();
+        const events = data.events || [];
+        const reg = events.find(e => e.eventAction === "registration");
+        const exp = events.find(e => e.eventAction === "expiration");
+        const ns = (data.nameservers || []).map(n => n.ldhName || n.unicodeName || "").filter(Boolean).slice(0, 2).join(", ");
+        let registrar = "";
+        try {
+          const regEntity = data.entities?.find(e => e.roles?.includes("registrar"));
+          if (regEntity?.vcardArray?.[1]) {
+            const fn = regEntity.vcardArray[1].find(v => v[0] === "fn");
+            if (fn) registrar = fn[3];
+          }
+        } catch {}
+
+        const expiryDate = exp ? new Date(exp.eventDate) : null;
+        const regDate = reg ? new Date(reg.eventDate) : null;
+
+        let expiryInfo = "";
+        if (expiryDate) {
+          const now = new Date();
+          const diffMs = expiryDate - now;
+          const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+          if (diffDays < 0) {
+            expiryInfo = " ⚡ SÜRESİ DOLMUŞ (" + Math.abs(diffDays) + " gün önce)";
+          } else if (diffDays <= 30) {
+            expiryInfo = " 🔥 " + diffDays + " gün kaldı!";
+          } else if (diffDays <= 90) {
+            expiryInfo = " ⏰ " + diffDays + " gün kaldı";
+          }
+        }
+
+        let info = "Kayıtlı (RDAP doğrulandı)";
+        const parts = [];
+        if (registrar) parts.push(registrar);
+        if (reg) parts.push("Kayıt: " + regDate.toLocaleDateString("tr-TR"));
+        if (exp) parts.push("Bitiş: " + expiryDate.toLocaleDateString("tr-TR") + expiryInfo);
+        if (ns) parts.push("NS: " + ns);
+        if (parts.length) info += " · " + parts.join(" · ");
+        return { domain: clean, status: "taken", info, expiryDate: expiryDate ? expiryDate.toISOString() : null, regDate: regDate ? regDate.toISOString() : null };
+      } catch {
+        return { domain: clean, status: "taken", info: "Kayıtlı (RDAP yanıt verdi)", expiryDate: null, regDate: null };
+      }
+    }
+  } catch (e) {}
+
+  // Fallback RDAP
+  if (rdapUrl !== rdapUrls[0]) {
+    try {
+      const ctrl2 = new AbortController();
+      const t2 = setTimeout(() => ctrl2.abort(), 7000);
+      const resp2 = await fetch(rdapUrls[0], {
+        signal: ctrl2.signal,
+        headers: { "Accept": "application/rdap+json,application/json" }
+      });
+      clearTimeout(t2);
+
+      if (resp2.status === 404) {
+        const dnsConfirm = await quickDnsCheck(clean);
+        if (dnsConfirm === "nxdomain") {
+          return { domain: clean, status: "available", info: "✓ Müsait — RDAP + DNS doğrulandı", expiryDate: null, regDate: null };
+        }
+        return { domain: clean, status: "available", info: "✓ Müsait — RDAP'ta kayıt yok", expiryDate: null, regDate: null };
+      }
+      if (resp2.ok) {
+        return { domain: clean, status: "taken", info: "Kayıtlı (RDAP)", expiryDate: null, regDate: null };
+      }
+    } catch {}
+  }
+
+  // DNS check
+  try {
+    const ctrl3 = new AbortController();
+    const t3 = setTimeout(() => ctrl3.abort(), 6000);
+    const nsResp = await fetch("https://dns.google/resolve?name=" + encodeURIComponent(clean) + "&type=NS", { signal: ctrl3.signal });
+    clearTimeout(t3);
+
+    if (nsResp.ok) {
+      const nsData = await nsResp.json();
+
+      if (nsData.Status === 3) {
+        return { domain: clean, status: "available", info: "⚠ Muhtemelen müsait — DNS kaydı yok (RDAP doğrulanamadı)", expiryDate: null, regDate: null };
+      }
+
+      if (nsData.Answer && nsData.Answer.length > 0) {
+        const nsList = nsData.Answer.filter(a => a.type === 2).map(a => a.data.replace(/\.$/, "")).slice(0, 2).join(", ");
+        return { domain: clean, status: "taken", info: "Kayıtlı (DNS) · NS: " + nsList, expiryDate: null, regDate: null };
+      }
+
+      if (nsData.Authority && nsData.Authority.length > 0) {
+        const soaRec = nsData.Authority.find(a => a.type === 6);
+        if (soaRec) {
+          const soaName = (soaRec.name || "").replace(/\.$/, "").toLowerCase();
+          if (soaName === clean) {
+            return { domain: clean, status: "taken", info: "Kayıtlı (SOA mevcut)", expiryDate: null, regDate: null };
+          }
+        }
+      }
+
+      if (nsData.Status === 0) {
+        return { domain: clean, status: "error", info: "Belirsiz — RDAP ulaşılamadı, DNS belirsiz", expiryDate: null, regDate: null };
+      }
+    }
+  } catch {}
+
+  // Cloudflare DNS fallback
+  try {
+    const ctrl4 = new AbortController();
+    const t4 = setTimeout(() => ctrl4.abort(), 5000);
+    const cfResp = await fetch("https://cloudflare-dns.com/dns-query?name=" + encodeURIComponent(clean) + "&type=NS", {
+      signal: ctrl4.signal, headers: { "Accept": "application/dns-json" }
+    });
+    clearTimeout(t4);
+    if (cfResp.ok) {
+      const cfData = await cfResp.json();
+      if (cfData.Status === 3) return { domain: clean, status: "available", info: "⚠ Muhtemelen müsait — DNS kaydı yok (CF)", expiryDate: null, regDate: null };
+      if (cfData.Answer && cfData.Answer.length > 0) return { domain: clean, status: "taken", info: "Kayıtlı (CF DNS)", expiryDate: null, regDate: null };
+    }
+  } catch {}
+
+  return { domain: clean, status: "error", info: "Kontrol edilemedi — tüm sunuculara ulaşılamadı", expiryDate: null, regDate: null };
+}
+
+async function quickDnsCheck(domain) {
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 4000);
+    const resp = await fetch("https://dns.google/resolve?name=" + encodeURIComponent(domain) + "&type=A", { signal: ctrl.signal });
+    clearTimeout(t);
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.Status === 3) return "nxdomain";
+      if (data.Answer && data.Answer.length > 0) return "exists";
+    }
+  } catch {}
+  return "unknown";
+}
+
+async function dnsOnlyCheck(domain) {
+  const useGoogle = Math.random() > 0.3;
+  const dnsUrl = useGoogle
+    ? "https://dns.google/resolve?name=" + encodeURIComponent(domain) + "&type=NS"
+    : "https://cloudflare-dns.com/dns-query?name=" + encodeURIComponent(domain) + "&type=NS";
+  const headers = useGoogle ? {} : { "Accept": "application/dns-json" };
+
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 5000);
+    const resp = await fetch(dnsUrl, { signal: ctrl.signal, headers });
+    clearTimeout(t);
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.Status === 3) return { domain, status: "available", info: "⚠ Muhtemelen müsait — NXDOMAIN (DNS)", expiryDate: null, regDate: null };
+      if (data.Answer && data.Answer.length > 0) {
+        const nsList = data.Answer.filter(a => a.type === 2).map(a => (a.data||"").replace(/\.$/, "")).slice(0, 2).join(", ");
+        return { domain, status: "taken", info: "Kayıtlı (DNS)" + (nsList ? " · NS: " + nsList : ""), expiryDate: null, regDate: null };
+      }
+      if (data.Authority && data.Authority.length > 0) {
+        return { domain, status: "taken", info: "Kayıtlı (Authority)", expiryDate: null, regDate: null };
+      }
+      if (data.Status === 0) return { domain, status: "available", info: "⚠ Muhtemelen müsait — DNS boş", expiryDate: null, regDate: null };
+    }
+  } catch {}
+
+  try {
+    const dnsUrl2 = !useGoogle
+      ? "https://dns.google/resolve?name=" + encodeURIComponent(domain) + "&type=NS"
+      : "https://cloudflare-dns.com/dns-query?name=" + encodeURIComponent(domain) + "&type=NS";
+    const headers2 = !useGoogle ? {} : { "Accept": "application/dns-json" };
+    const ctrl2 = new AbortController();
+    const t2 = setTimeout(() => ctrl2.abort(), 4000);
+    const resp2 = await fetch(dnsUrl2, { signal: ctrl2.signal, headers: headers2 });
+    clearTimeout(t2);
+    if (resp2.ok) {
+      const data2 = await resp2.json();
+      if (data2.Status === 3) return { domain, status: "available", info: "⚠ Muhtemelen müsait — NXDOMAIN", expiryDate: null, regDate: null };
+      if (data2.Answer && data2.Answer.length > 0) return { domain, status: "taken", info: "Kayıtlı (DNS fallback)", expiryDate: null, regDate: null };
+    }
+  } catch {}
+
+  return { domain, status: "error", info: "Kontrol edilemedi", expiryDate: null, regDate: null };
+}
+
+async function startCheck() {
+  const lines = document.getElementById("domainInput").value.split("\n").map(d => d.trim()).filter(d => d.length > 0);
+  if (!lines.length) return;
+
+  let allDomains = [];
+  lines.forEach(line => {
+    if (/\.[a-z]{2,}$/i.test(line)) allDomains.push(line);
+    else selectedTLDs.forEach(tld => allDomains.push(line + tld));
+  });
+  allDomains = [...new Set(allDomains)];
+
+  const speedConf = {
+    slow:   { batch: 2,  delay: 800 },
+    normal: { batch: 5,  delay: 400 },
+    fast:   { batch: 10, delay: 200 },
+    turbo:  { batch: 15, delay: 100 },
+    max:    { batch: 25, delay: 50  },
+  };
+  const speed = speedConf[document.getElementById("speedMode").value] || speedConf.normal;
+
+  checking = true; aborted = false; results = []; currentFilter = "all";
+  checkStartTime = Date.now();
+  document.getElementById("startBtn").classList.add("hidden");
+  document.getElementById("stopBtn").classList.remove("hidden");
+  document.getElementById("progressSection").classList.remove("hidden");
+  document.getElementById("csvBtn").classList.add("hidden");
+  document.getElementById("copyBtn").classList.add("hidden");
+  document.getElementById("statsSection").classList.add("hidden");
+  document.getElementById("resultsCard").classList.add("hidden");
+  document.getElementById("resultsList").innerHTML = "";
+  document.getElementById("speedText").textContent = "";
+  document.getElementById("etaText").textContent = "";
+
+  const total = allDomains.length;
+  const batch = speed.batch;
+  const delay = speed.delay;
+  let errorStreak = 0;
+
+  for (let i = 0; i < total; i += batch) {
+    if (aborted) break;
+    const group = allDomains.slice(i, i + batch);
+    const res = await Promise.all(group.map(d => checkDomain(d)));
+    results.push(...res);
+    const done = Math.min(i + batch, total);
+    document.getElementById("progressText").textContent = done + " / " + total;
+    document.getElementById("progressBar").style.width = ((done / total) * 100) + "%";
+
+    const batchErrors = res.filter(r => r.status === "error").length;
+    if (batchErrors === res.length) {
+      errorStreak++;
+      if (errorStreak >= 3) {
+        await new Promise(r => setTimeout(r, delay * 5));
+        errorStreak = 0;
+      }
+    } else {
+      errorStreak = 0;
+    }
+
+    const elapsed = (Date.now() - checkStartTime) / 1000;
+    const spd = (done / elapsed).toFixed(1);
+    const remaining = total - done;
+    const eta = remaining > 0 ? Math.ceil(remaining / (done / elapsed)) : 0;
+    const etaMin = Math.floor(eta / 60);
+    const etaSec = eta % 60;
+    document.getElementById("speedText").textContent = spd + " domain/sn";
+    document.getElementById("etaText").textContent = eta > 0 ? (etaMin > 0 ? etaMin + "dk " : "") + etaSec + "sn kaldı" : "";
+
+    renderResults();
+    if (i + batch < total && !aborted) await new Promise(r => setTimeout(r, delay));
+  }
+
+  checking = false;
+  document.getElementById("startBtn").classList.remove("hidden");
+  document.getElementById("stopBtn").classList.add("hidden");
+  document.getElementById("progressSection").classList.add("hidden");
+  if (results.length) {
+    document.getElementById("csvBtn").classList.remove("hidden");
+    if (results.some(r => r.status === "available")) document.getElementById("copyBtn").classList.remove("hidden");
+  }
+
+  const availableDomains = results.filter(r => r.status === "available");
+  if (availableDomains.length > 0 && document.getElementById("autoTmCheck").checked) {
+    await autoTrademarkCheck(availableDomains);
+  }
+}
+
+function stopCheck() { aborted = true; }
+
+let visibleCount = 100;
+
+function setFilter(f) {
+  currentFilter = f;
+  visibleCount = 100;
+  renderResults();
+  document.getElementById("resultsCard").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function renderResults() {
+  if (!results.length) return;
+  const counts = { all: results.length, available: results.filter(r => r.status === "available").length, taken: results.filter(r => r.status === "taken").length, error: results.filter(r => r.status === "error").length };
+
+  document.getElementById("statsSection").classList.remove("hidden");
+  document.getElementById("statAll").textContent = counts.all.toLocaleString("tr-TR");
+  document.getElementById("statAvail").textContent = counts.available.toLocaleString("tr-TR");
+  document.getElementById("statTaken").textContent = counts.taken.toLocaleString("tr-TR");
+  document.getElementById("statError").textContent = counts.error.toLocaleString("tr-TR");
+
+  document.querySelectorAll(".stat-clickable").forEach((el, i) => {
+    const keys = ["all","available","taken","error"];
+    el.classList.toggle("active-filter", currentFilter === keys[i]);
+  });
+
+  document.getElementById("resultsCard").classList.remove("hidden");
+
+  const tabs = document.getElementById("filterTabs");
+  tabs.innerHTML = "";
+  [{ key:"all", label:"Tümü "+counts.all }, { key:"available", label:"✓ Müsait "+counts.available }, { key:"taken", label:"✗ Kayıtlı "+counts.taken }, { key:"error", label:"? Belirsiz "+counts.error }].forEach(f => {
+    const btn = document.createElement("button");
+    btn.className = "tab" + (currentFilter === f.key ? " on" : "");
+    btn.textContent = f.label;
+    btn.onclick = () => setFilter(f.key);
+    tabs.appendChild(btn);
+  });
+
+  const retryBtn = document.getElementById("retryBtn");
+  const copyFilteredBtn = document.getElementById("copyFilteredBtn");
+  retryBtn.classList.toggle("hidden", counts.error === 0);
+  copyFilteredBtn.classList.remove("hidden");
+
+  const colors = {
+    available: { dot:"#10b981", bg:"#0d2818", border:"#10b981", text:"#34d399", label:"MÜSAİT" },
+    taken: { dot:"#ef4444", bg:"#2d1215", border:"#ef4444", text:"#f87171", label:"KAYITLI" },
+    error: { dot:"#f59e0b", bg:"#2d2305", border:"#f59e0b", text:"#fbbf24", label:"BELİRSİZ" }
+  };
+
+  const filtered = results.filter(r => currentFilter === "all" || r.status === currentFilter);
+
+  const sortMode = document.getElementById("sortSelect").value;
+  if (sortMode === "expiry_asc") {
+    filtered.sort((a, b) => {
+      const ea = a.expiryDate ? new Date(a.expiryDate).getTime() : Infinity;
+      const eb = b.expiryDate ? new Date(b.expiryDate).getTime() : Infinity;
+      return ea - eb;
+    });
+  } else if (sortMode === "expiry_desc") {
+    filtered.sort((a, b) => {
+      const ea = a.expiryDate ? new Date(a.expiryDate).getTime() : 0;
+      const eb = b.expiryDate ? new Date(b.expiryDate).getTime() : 0;
+      return eb - ea;
+    });
+  } else if (sortMode === "reg_asc") {
+    filtered.sort((a, b) => {
+      const ra = a.regDate ? new Date(a.regDate).getTime() : Infinity;
+      const rb = b.regDate ? new Date(b.regDate).getTime() : Infinity;
+      return ra - rb;
+    });
+  } else if (sortMode === "alpha") {
+    filtered.sort((a, b) => a.domain.localeCompare(b.domain));
+  } else if (sortMode === "alpha_desc") {
+    filtered.sort((a, b) => b.domain.localeCompare(a.domain));
+  } else if (sortMode === "short") {
+    filtered.sort((a, b) => a.domain.length - b.domain.length);
+  }
+
+  const toShow = filtered.slice(0, visibleCount);
+  const list = document.getElementById("resultsList");
+  list.innerHTML = "";
+
+  const withExpiry = filtered.filter(r => r.expiryDate).length;
+  const expiringSoon = filtered.filter(r => {
+    if (!r.expiryDate) return false;
+    const diff = (new Date(r.expiryDate) - new Date()) / (1000*60*60*24);
+    return diff <= 90;
+  }).length;
+
+  const infoEl = document.getElementById("resultInfo");
+  if (filtered.length > 0) {
+    infoEl.style.display = "block";
+    const statusLabel = currentFilter === "all" ? "Tüm sonuçlar" : currentFilter === "available" ? "Müsait domainler" : currentFilter === "taken" ? "Kayıtlı domainler" : "Belirsiz domainler";
+    let infoText = statusLabel + ": " + filtered.length.toLocaleString("tr-TR") + " adet";
+    if (filtered.length > visibleCount) infoText += " (ilk " + visibleCount + " gösteriliyor)";
+    if (withExpiry > 0) infoText += " · " + withExpiry + " bitiş tarihli";
+    if (expiringSoon > 0) infoText += " · 🔥 " + expiringSoon + " tanesi 90 gün içinde bitiyor!";
+    infoEl.textContent = infoText;
+  } else {
+    infoEl.style.display = "block";
+    infoEl.textContent = "Bu kategoride sonuç yok";
+  }
+
+  toShow.forEach(r => {
+    const c = colors[r.status];
+
+    let expiryBadge = "";
+    if (r.expiryDate) {
+      const diffDays = Math.ceil((new Date(r.expiryDate) - new Date()) / (1000*60*60*24));
+      if (diffDays < 0) {
+        expiryBadge = `<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:rgba(139,92,246,0.15);color:#c084fc;font-family:'Outfit',sans-serif;margin-left:6px;">⚡ DOLMUŞ ${Math.abs(diffDays)}g</span>`;
+      } else if (diffDays <= 30) {
+        expiryBadge = `<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:rgba(239,68,68,0.15);color:#f87171;font-family:'Outfit',sans-serif;margin-left:6px;">🔥 ${diffDays}g kaldı</span>`;
+      } else if (diffDays <= 90) {
+        expiryBadge = `<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:rgba(245,158,11,0.15);color:#fbbf24;font-family:'Outfit',sans-serif;margin-left:6px;">⏰ ${diffDays}g kaldı</span>`;
+      }
+    }
+
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = `<div class="dot" style="background:${c.dot}"></div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;flex-wrap:wrap;"><span class="row-domain">${r.domain}</span>${expiryBadge}</div><div class="row-info">${r.info}</div></div><div class="badge" style="background:${c.bg};color:${c.text};border:1px solid ${c.border}25">${c.label}</div>`;
+    list.appendChild(row);
+  });
+
+  const loadMoreWrap = document.getElementById("loadMoreWrap");
+  if (filtered.length > visibleCount) {
+    loadMoreWrap.style.display = "block";
+    document.getElementById("loadMoreBtn").textContent = "Daha fazla göster (" + (filtered.length - visibleCount).toLocaleString("tr-TR") + " kaldı)";
+  } else {
+    loadMoreWrap.style.display = "none";
+  }
+}
+
+function showMore() {
+  visibleCount += 200;
+  renderResults();
+}
+
+async function retryErrors() {
+  const errorDomains = results.filter(r => r.status === "error").map(r => r.domain);
+  if (!errorDomains.length) return;
+
+  results = results.filter(r => r.status !== "error");
+
+  checking = true; aborted = false;
+  checkStartTime = Date.now();
+  document.getElementById("startBtn").classList.add("hidden");
+  document.getElementById("stopBtn").classList.remove("hidden");
+  document.getElementById("progressSection").classList.remove("hidden");
+  document.getElementById("retryBtn").classList.add("hidden");
+  document.getElementById("speedText").textContent = "";
+  document.getElementById("etaText").textContent = "";
+
+  const total = errorDomains.length;
+  const batch = 3;
+  let done = 0;
+
+  for (let i = 0; i < total; i += batch) {
+    if (aborted) break;
+    const group = errorDomains.slice(i, i + batch);
+    const res = await Promise.all(group.map(checkDomain));
+    results.push(...res);
+    done = Math.min(i + batch, total);
+    document.getElementById("progressText").textContent = "Tekrar: " + done + " / " + total;
+    document.getElementById("progressBar").style.width = ((done / total) * 100) + "%";
+
+    const elapsed = (Date.now() - checkStartTime) / 1000;
+    const speed = (done / elapsed).toFixed(1);
+    const remaining = total - done;
+    const eta = remaining > 0 ? Math.ceil(remaining / (done / elapsed)) : 0;
+    document.getElementById("speedText").textContent = speed + " domain/sn";
+    document.getElementById("etaText").textContent = eta > 0 ? Math.ceil(eta) + "sn kaldı" : "";
+
+    renderResults();
+    if (i + batch < total && !aborted) await new Promise(r => setTimeout(r, 500));
+  }
+
+  checking = false;
+  document.getElementById("startBtn").classList.remove("hidden");
+  document.getElementById("stopBtn").classList.add("hidden");
+  document.getElementById("progressSection").classList.add("hidden");
+  if (results.some(r => r.status === "available")) document.getElementById("copyBtn").classList.remove("hidden");
+  renderResults();
+}
+
+function copyFiltered() {
+  const filtered = results.filter(r => currentFilter === "all" || r.status === currentFilter);
+  const text = filtered.map(r => r.domain).join("\n");
+  if (text) navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById("copyFilteredBtn");
+    const old = btn.textContent;
+    btn.textContent = "✓ Kopyalandı!";
+    setTimeout(() => btn.textContent = old, 1500);
+  });
+}
+
+function exportCSV() {
+  const bom = "\uFEFF";
+  const csv = bom + "Domain,Durum,Bitiş Tarihi,Kayıt Tarihi,Kalan Gün,Marka Durumu,Detay\n" + results.map(r => {
+    const expStr = r.expiryDate ? new Date(r.expiryDate).toLocaleDateString("tr-TR") : "";
+    const regStr = r.regDate ? new Date(r.regDate).toLocaleDateString("tr-TR") : "";
+    const daysLeft = r.expiryDate ? Math.ceil((new Date(r.expiryDate) - new Date()) / (1000*60*60*24)) : "";
+    const tmStr = r.tmStatus === "clear" ? "Temiz" : r.tmStatus === "conflict" ? "Çakışma" : "";
+    return '"' + r.domain + '","' + (r.status === "available" ? "Müsait" : r.status === "taken" ? "Kayıtlı" : "Belirsiz") + '","' + expStr + '","' + regStr + '","' + daysLeft + '","' + tmStr + '","' + r.info.replace(/"/g, '""') + '"';
+  }).join("\n");
+  const blob = new Blob([csv], { type:"text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "domain-sonuclari.csv"; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function copyAvailable() {
+  const avail = results.filter(r => r.status === "available").map(r => r.domain).join("\n");
+  if (avail) navigator.clipboard.writeText(avail).then(() => {
+    const btn = document.getElementById("copyBtn");
+    btn.textContent = "✓ Kopyalandı!";
+    setTimeout(() => btn.textContent = "📋 Müsaitleri Kopyala", 1500);
+  });
+}
+
+updatePreview();
+
+// ===================== TRADEMARK SEARCH =====================
+
+async function autoTrademarkCheck(availableDomains) {
+  const loading = document.getElementById("tmLoading");
+  const resultsDiv = document.getElementById("tmResults");
+  const summaryDiv = document.getElementById("tmSummary");
+  const listDiv = document.getElementById("tmList");
+
+  const brandNames = [...new Set(availableDomains.map(r => {
+    const parts = r.domain.split(".");
+    parts.pop();
+    return parts.join(".").replace(/-/g, " ");
+  }))];
+
+  const totalBrands = brandNames.length;
+
+  loading.classList.remove("hidden");
+  loading.innerHTML = '<span class="spinner"></span> Marka kontrolü başlıyor... (' + totalBrands + ' isim sorgulanacak)';
+  resultsDiv.style.display = "none";
+
+  document.getElementById("trademarkSection").scrollIntoView({ behavior: "smooth", block: "start" });
+
+  let allTmResults = [];
+  let checked = 0;
+  let errorCount = 0;
+  const tmStartTime = Date.now();
+
+  const batchSize = 10;
+  const delayBetween = 400;
+  const batchPause = 2000;
+  const longPause = 5000;
+  const errorThreshold = 3;
+
+  for (let i = 0; i < totalBrands; i++) {
+    if (aborted) break;
+
+    const brand = brandNames[i];
+    checked++;
+
+    const elapsed = (Date.now() - tmStartTime) / 1000;
+    const speed = checked > 1 ? (checked / elapsed).toFixed(1) : "—";
+    const remaining = totalBrands - checked;
+    const eta = checked > 1 && elapsed > 0 ? Math.ceil(remaining / (checked / elapsed)) : 0;
+    const etaStr = eta > 60 ? Math.floor(eta/60) + "dk " + (eta%60) + "sn" : eta + "sn";
+    const pct = ((checked / totalBrands) * 100).toFixed(0);
+
+    loading.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:center;">
+        <div><span class="spinner"></span> Marka kontrolü: "<strong>${brand}</strong>"</div>
+        <div style="font-size:10px;color:#64748b;">${checked}/${totalBrands} (${pct}%) · ${speed} isim/sn · ${remaining > 0 ? etaStr + ' kaldı' : 'tamamlanıyor...'}</div>
+        <div class="bar-track" style="width:100%;max-width:400px;margin-top:2px;">
+          <div class="bar-fill" style="width:${pct}%;background:linear-gradient(90deg,#8b5cf6,#6366f1,#06b6d4);"></div>
+        </div>
+      </div>
+    `;
+
+    try {
+      const params = new URLSearchParams({
+        q: "BRAND:" + brand,
+        fl: "BRAND,SOURCE,STATUS,OO,HOL,NC",
+        type: "brand",
+        "json.nl": "map",
+        wt: "json",
+        sort: "score desc",
+        rows: "5",
+        start: "0",
+      });
+
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 8000);
+      const resp = await fetch("https://branddb.wipo.int/branddb/jsp/select.jsp?" + params.toString(), { signal: ctrl.signal });
+      clearTimeout(t);
+
+      if (resp.ok) {
+        errorCount = 0;
+        const text = await resp.text();
+        try {
+          const data = JSON.parse(text);
+          const docs = data?.response?.docs || [];
+          const total = data?.response?.numFound || 0;
+
+          const matches = docs.filter(doc => {
+            const b = (Array.isArray(doc.BRAND) ? doc.BRAND[0] : doc.BRAND || "").toLowerCase();
+            return b === brand.toLowerCase() || b.replace(/\s+/g, "") === brand.replace(/\s+/g, "");
+          });
+
+          if (matches.length > 0) {
+            matches.forEach(doc => {
+              allTmResults.push({
+                brand, name: (Array.isArray(doc.BRAND) ? doc.BRAND[0] : doc.BRAND) || "—",
+                source: (Array.isArray(doc.SOURCE) ? doc.SOURCE[0] : doc.SOURCE) || "—",
+                status: (Array.isArray(doc.STATUS) ? doc.STATUS[0] : doc.STATUS) || "—",
+                owner: (Array.isArray(doc.HOL) ? doc.HOL[0] : doc.HOL) || "",
+                country: (Array.isArray(doc.OO) ? doc.OO[0] : doc.OO) || "",
+                niceClass: (Array.isArray(doc.NC) ? doc.NC.join(", ") : doc.NC) || "",
+                totalFound: total,
+              });
+            });
+          } else {
+            allTmResults.push({ brand, name: brand, source: "—", status: "CLEAR", owner: "", country: "", niceClass: "", totalFound: total });
+          }
+        } catch {}
+      } else if (resp.status === 429) {
+        errorCount++;
+        loading.innerHTML = `<div style="color:#fbbf24;"><span class="spinner"></span> Rate limit — ${longPause/1000}sn bekleniyor... (${checked}/${totalBrands})</div>`;
+        await new Promise(r => setTimeout(r, longPause));
+        i--; checked--;
+        continue;
+      } else {
+        errorCount++;
+      }
+    } catch (e) {
+      errorCount++;
+    }
+
+    if (errorCount >= errorThreshold) {
+      loading.innerHTML = `<div style="color:#fbbf24;"><span class="spinner"></span> Çok fazla hata — ${longPause/1000}sn mola... (${checked}/${totalBrands})</div>`;
+      await new Promise(r => setTimeout(r, longPause));
+      errorCount = 0;
+    } else if (i > 0 && i % batchSize === 0) {
+      loading.innerHTML = `<div style="color:#a5b4fc;"><span class="spinner"></span> Batch mola (${batchPause/1000}sn)... ${checked}/${totalBrands} tamamlandı</div>`;
+      await new Promise(r => setTimeout(r, batchPause));
+    } else if (i < totalBrands - 1) {
+      await new Promise(r => setTimeout(r, delayBetween));
+    }
+  }
+
+  loading.classList.add("hidden");
+  resultsDiv.style.display = "block";
+
+  const conflicts = allTmResults.filter(r => r.status !== "CLEAR");
+  const clear = allTmResults.filter(r => r.status === "CLEAR");
+
+  if (conflicts.length === 0) {
+    summaryDiv.style.background = "rgba(16,185,129,0.1)";
+    summaryDiv.style.color = "#34d399";
+    summaryDiv.style.border = "1px solid rgba(16,185,129,0.2)";
+    summaryDiv.innerHTML = '✅ Müsait domainlerin hiçbirinde tescilli marka çakışması bulunamadı! (' + totalBrands + ' isim kontrol edildi)';
+  } else {
+    summaryDiv.style.background = "rgba(239,68,68,0.1)";
+    summaryDiv.style.color = "#f87171";
+    summaryDiv.style.border = "1px solid rgba(239,68,68,0.2)";
+    summaryDiv.innerHTML = '⚠️ <strong>' + conflicts.length + '</strong> marka çakışması bulundu! ' + clear.length + ' isim temiz. (' + totalBrands + ' kontrol edildi)';
+  }
+
+  listDiv.innerHTML = "";
+
+  const sorted = [...conflicts, ...clear];
+  sorted.forEach(r => {
+    const isClear = r.status === "CLEAR";
+    const sourceLabel2 = r.source === "TR" ? "🇹🇷" : r.source === "US" ? "🇺🇸" : r.source === "EM" ? "🇪🇺" : r.source === "WO" ? "🌐" : r.source;
+
+    const row = document.createElement("div");
+    row.className = "row";
+    if (isClear) {
+      row.innerHTML = `
+        <div class="dot" style="background:#10b981"></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:500;color:#e2e8f0;">${r.brand}</div>
+          <div style="font-size:10px;color:#4a5568;margin-top:1px;">${r.totalFound > 0 ? r.totalFound + ' benzer sonuç var ama tam eşleşme yok' : 'Hiç sonuç yok'}</div>
+        </div>
+        <div class="badge" style="background:#0d2818;color:#34d399;border:1px solid #10b98125">TEMİZ</div>
+      `;
+    } else {
+      row.innerHTML = `
+        <div class="dot" style="background:#ef4444"></div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:12px;font-weight:500;color:#e2e8f0;">${r.brand}</span>
+            <span style="font-size:9px;color:#f87171;">→ "${r.name}"</span>
+          </div>
+          <div style="font-size:10px;color:#4a5568;margin-top:1px;">
+            ${sourceLabel2} ${r.source} · ${r.status}${r.country ? ' · ' + r.country : ''}${r.owner ? ' · ' + r.owner : ''}${r.niceClass ? ' · Sınıf: ' + r.niceClass : ''}
+          </div>
+        </div>
+        <div class="badge" style="background:#2d1215;color:#f87171;border:1px solid #ef444425">ÇAKIŞMA</div>
+      `;
+    }
+    listDiv.appendChild(row);
+  });
+
+  results.forEach(r => {
+    if (r.status !== "available") return;
+    const brandName = r.domain.split(".").slice(0, -1).join(".").replace(/-/g, " ");
+    const tmResult = allTmResults.find(t => t.brand === brandName);
+    if (tmResult) {
+      if (tmResult.status === "CLEAR") {
+        r.tmStatus = "clear";
+        r.info += " · 🏛️ Marka temiz";
+      } else {
+        r.tmStatus = "conflict";
+        r.info += " · ⚠️ Marka çakışması: " + tmResult.name + " (" + tmResult.source + ")";
+      }
+    }
+  });
+  renderResults();
+
+  document.getElementById("trademarkSection").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+async function searchTrademark() {
+  const query = document.getElementById("tmInput").value.trim();
+  if (!query) return;
+
+  const source = document.getElementById("tmSource").value;
+  const loading = document.getElementById("tmLoading");
+  const resultsDiv = document.getElementById("tmResults");
+  const summaryDiv = document.getElementById("tmSummary");
+  const listDiv = document.getElementById("tmList");
+  const btn = document.getElementById("tmSearchBtn");
+
+  loading.classList.remove("hidden");
+  resultsDiv.style.display = "none";
+  btn.disabled = true;
+
+  let allResults = [];
+
+  const sourceFilter = source === "all" ? "" : source;
+
+  try {
+    const params = new URLSearchParams({
+      q: "BRAND:" + query,
+      fl: "BRAND,SOURCE,STATUS,OO,HOL,ID,AD,NC",
+      type: "brand",
+      "json.nl": "map",
+      wt: "json",
+      sort: "score desc,AD desc",
+      rows: "30",
+      start: "0",
+    });
+
+    if (sourceFilter) {
+      params.append("fq", "SOURCE:" + sourceFilter);
+    }
+
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 12000);
+
+    const resp = await fetch("https://branddb.wipo.int/branddb/jsp/select.jsp?" + params.toString(), {
+      signal: ctrl.signal,
+    });
+    clearTimeout(t);
+
+    if (resp.ok) {
+      const text = await resp.text();
+      try {
+        const data = JSON.parse(text);
+        const docs = data?.response?.docs || [];
+        const total = data?.response?.numFound || 0;
+
+        docs.forEach(doc => {
+          allResults.push({
+            name: (Array.isArray(doc.BRAND) ? doc.BRAND[0] : doc.BRAND) || "—",
+            source: (Array.isArray(doc.SOURCE) ? doc.SOURCE[0] : doc.SOURCE) || "—",
+            status: (Array.isArray(doc.STATUS) ? doc.STATUS[0] : doc.STATUS) || "—",
+            owner: (Array.isArray(doc.HOL) ? doc.HOL[0] : doc.HOL) || "",
+            country: (Array.isArray(doc.OO) ? doc.OO[0] : doc.OO) || "",
+            date: (Array.isArray(doc.AD) ? doc.AD[0] : doc.AD) || "",
+            niceClass: (Array.isArray(doc.NC) ? doc.NC.join(", ") : doc.NC) || "",
+          });
+        });
+
+        loading.classList.add("hidden");
+        resultsDiv.style.display = "block";
+        btn.disabled = false;
+
+        if (allResults.length === 0) {
+          summaryDiv.style.background = "rgba(16,185,129,0.1)";
+          summaryDiv.style.color = "#34d399";
+          summaryDiv.style.border = "1px solid rgba(16,185,129,0.2)";
+          summaryDiv.innerHTML = '✅ <strong>"' + query + '"</strong> için ' + (source === "all" ? "hiçbir ülkede" : sourceLabel(source) + " veritabanında") + ' tescilli marka bulunamadı. ' + (total > 0 ? '(' + total + ' benzer sonuç bulundu, tam eşleşme yok)' : '') + ' Marka tescili için uygun görünüyor!';
+        } else {
+          const trCount = allResults.filter(r => r.source === "TR").length;
+          summaryDiv.style.background = "rgba(239,68,68,0.1)";
+          summaryDiv.style.color = "#f87171";
+          summaryDiv.style.border = "1px solid rgba(239,68,68,0.2)";
+          summaryDiv.innerHTML = '⚠️ <strong>"' + query + '"</strong> için <strong>' + total + '</strong> marka kaydı bulundu' +
+            (trCount > 0 ? ' (Türkiye: ' + trCount + ')' : '') +
+            '. İlk ' + allResults.length + ' sonuç aşağıda:';
+        }
+
+        listDiv.innerHTML = "";
+        allResults.forEach(r => {
+          const statusColor = r.status === "Registered" || r.status === "REGISTERED" ? "#ef4444" :
+                             r.status === "Pending" || r.status === "PENDING" ? "#f59e0b" :
+                             r.status === "Expired" || r.status === "EXPIRED" ? "#64748b" : "#94a3b8";
+          const sourceLabel2 = r.source === "TR" ? "🇹🇷 Türkpatent" :
+                              r.source === "US" ? "🇺🇸 USPTO" :
+                              r.source === "EM" ? "🇪🇺 EUIPO" :
+                              r.source === "WO" ? "🌐 WIPO" : r.source;
+
+          const row = document.createElement("div");
+          row.className = "row";
+          row.innerHTML = `
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:12px;font-weight:600;color:#e2e8f0;">${r.name}</span>
+                <span style="font-size:9px;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,0.06);color:${statusColor};font-family:'Outfit',sans-serif;">${r.status}</span>
+              </div>
+              <div style="font-size:10px;color:#4a5568;margin-top:2px;">
+                ${sourceLabel2}${r.country ? " · " + r.country : ""}${r.owner ? " · " + r.owner : ""}${r.niceClass ? " · Sınıf: " + r.niceClass : ""}${r.date ? " · " + r.date.substring(0, 10) : ""}
+              </div>
+            </div>
+          `;
+          listDiv.appendChild(row);
+        });
+
+        return;
+      } catch (parseErr) {
+        console.error("WIPO parse error:", parseErr);
+      }
+    }
+  } catch (e) {
+    console.error("WIPO fetch error:", e);
+  }
+
+  loading.classList.add("hidden");
+  resultsDiv.style.display = "block";
+  btn.disabled = false;
+
+  summaryDiv.style.background = "rgba(245,158,11,0.1)";
+  summaryDiv.style.color = "#fbbf24";
+  summaryDiv.style.border = "1px solid rgba(245,158,11,0.2)";
+  summaryDiv.innerHTML = '⚠️ WIPO veritabanına otomatik erişilemedi. Aşağıdaki bağlantılardan <strong>"' + query + '"</strong> markasını manuel olarak kontrol edebilirsiniz:';
+
+  listDiv.innerHTML = `
+    <div style="padding:12px;display:flex;flex-direction:column;gap:8px;">
+      <a href="https://online.turkpatent.gov.tr/trademark-search/pub/trademark_search" target="_blank" style="color:#a5b4fc;font-size:12px;text-decoration:none;font-family:'Outfit',sans-serif;">🇹🇷 Türkpatent Marka Araştırma → "${query}" yazarak arayın ↗</a>
+      <a href="https://branddb.wipo.int/branddb/en/#702" target="_blank" style="color:#a5b4fc;font-size:12px;text-decoration:none;font-family:'Outfit',sans-serif;">🌐 WIPO Global Brand Database → "${query}" yazarak arayın ↗</a>
+      <a href="https://tmsearch.uspto.gov/" target="_blank" style="color:#a5b4fc;font-size:12px;text-decoration:none;font-family:'Outfit',sans-serif;">🇺🇸 USPTO TESS → "${query}" yazarak arayın ↗</a>
+      <a href="https://euipo.europa.eu/eSearch/#basic/1+1+1+1/100+100+100+100/${encodeURIComponent(query)}" target="_blank" style="color:#a5b4fc;font-size:12px;text-decoration:none;font-family:'Outfit',sans-serif;">🇪🇺 EUIPO eSearch → "${query}" yazarak arayın ↗</a>
+    </div>
+  `;
+}
+
+function sourceLabel(s) {
+  return s === "TR" ? "Türkpatent" : s === "US" ? "USPTO" : s === "EM" ? "EUIPO" : s === "WO" ? "WIPO" : s;
+}
 </script>
 </body>
 </html>
