@@ -492,8 +492,8 @@
       <span class="spinner"></span> Marka veritabanları sorgulanıyor...
     </div>
     <div id="tmResults" style="margin-top:12px;display:none;">
-      <div id="tmSummary" style="padding:8px 12px;border-radius:8px;font-size:11px;font-family:'Inter',sans-serif;margin-bottom:8px;"></div>
-      <div id="tmList" class="scroll-box" style="max-height:300px;"></div>
+      <div id="tmSummary" style="padding:10px 14px;border-radius:10px;font-size:12px;font-family:'Inter',sans-serif;margin-bottom:8px;"></div>
+      <div id="tmList" class="scroll-box" style="max-height:500px;"></div>
     </div>
     <div id="tmLinks" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
       <span class="label" style="margin:0;font-size:12px;color:#9ca3af;">Manuel kontrol:</span>
@@ -1586,25 +1586,6 @@ renderFavorites();
 
 // ===================== TRADEMARK SEARCH =====================
 
-function addLiveTmResult(r) {
-  const liveList = document.getElementById("tmLiveList");
-  if (!liveList) return;
-  const isClear = r.status === "CLEAR";
-  const src = r.source === "TR" ? "🇹🇷" : r.source === "US" ? "🇺🇸" : r.source === "EM" ? "🇪🇺" : r.source === "WO" ? "🌐" : r.source;
-  const item = document.createElement("div");
-  item.style.cssText = "display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;font-size:12px;animation:fadeIn .3s;" +
-    (isClear ? "background:#ecfdf5;border:1px solid #a7f3d0;" : "background:#fef2f2;border:1px solid #fecaca;");
-  item.innerHTML = '<span style="font-size:14px;">' + (isClear ? '✅' : '⚠️') + '</span>' +
-    '<span style="font-weight:700;' + (isClear ? 'color:#047857;' : 'color:#b91c1c;') + '">' + r.brand + '</span>' +
-    '<span style="color:#64748b;font-size:11px;">→ ' +
-      (isClear
-        ? (r.totalFound > 0 ? r.totalFound + ' benzer sonuç, tam eşleşme yok' : 'Kayıt bulunamadı — TEMİZ')
-        : 'Çakışma: "' + r.name + '" ' + src + ' ' + r.source + (r.country ? ' · ' + r.country : '') + (r.owner ? ' · ' + r.owner : '') + (r.niceClass ? ' · Sınıf: ' + r.niceClass : '')) +
-    '</span>';
-  liveList.appendChild(item);
-  item.scrollIntoView({ behavior: "smooth", block: "nearest" });
-}
-
 async function autoTrademarkCheck(availableDomains) {
   const loading = document.getElementById("tmLoading");
   const resultsDiv = document.getElementById("tmResults");
@@ -1621,11 +1602,8 @@ async function autoTrademarkCheck(availableDomains) {
 
   loading.classList.remove("hidden");
   loading.innerHTML = '<span class="spinner"></span> Marka kontrolü başlıyor... (' + totalBrands + ' isim sorgulanacak)';
-  resultsDiv.style.display = "block";
-  summaryDiv.style.background = "#f8fafc";
-  summaryDiv.style.color = "#1e293b";
-  summaryDiv.style.border = "1px solid #e2e8f0";
-  summaryDiv.innerHTML = '<div style="font-weight:700;font-size:14px;margin-bottom:8px;">📊 Marka Kontrol Özeti — sorgulanıyor...</div><div id="tmLiveList" style="display:flex;flex-direction:column;gap:4px;"></div>';
+  resultsDiv.style.display = "none";
+  summaryDiv.innerHTML = "";
   listDiv.innerHTML = "";
 
   document.getElementById("trademarkSection").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1706,12 +1684,10 @@ async function autoTrademarkCheck(availableDomains) {
                 totalFound: total,
               };
               allTmResults.push(result);
-              addLiveTmResult(result);
             });
           } else {
             const result = { brand, name: brand, source: "—", status: "CLEAR", owner: "", country: "", niceClass: "", totalFound: total };
             allTmResults.push(result);
-            addLiveTmResult(result);
           }
         } catch {}
       } else if (resp.status === 429) {
@@ -1746,69 +1722,55 @@ async function autoTrademarkCheck(availableDomains) {
   const conflicts = allTmResults.filter(r => r.status !== "CLEAR");
   const clear = allTmResults.filter(r => r.status === "CLEAR");
 
-  // Canlı listeyi koru, sadece başlığı ve border rengini güncelle
-  const liveHeader = summaryDiv.querySelector("div:first-child");
-  if (liveHeader) {
-    const statusText = conflicts.length > 0
-      ? ' — ⚠️ ' + conflicts.length + ' çakışma, ✅ ' + clear.length + ' temiz'
-      : ' — ✅ Tümü temiz!';
-    liveHeader.innerHTML = '📊 Marka Kontrol Özeti — ' + totalBrands + ' isim kontrol edildi' + statusText;
+  // Özet başlık
+  if (conflicts.length > 0) {
+    summaryDiv.style.background = "#fef2f2";
+    summaryDiv.style.color = "#b91c1c";
+    summaryDiv.style.border = "1px solid #fecaca";
+    summaryDiv.innerHTML = '⚠️ <strong>' + totalBrands + '</strong> isim kontrol edildi — <strong>' + conflicts.length + ' çakışma</strong> bulundu, <strong>' + clear.length + '</strong> temiz';
+  } else {
+    summaryDiv.style.background = "#ecfdf5";
+    summaryDiv.style.color = "#047857";
+    summaryDiv.style.border = "1px solid #a7f3d0";
+    summaryDiv.innerHTML = '✅ <strong>' + totalBrands + '</strong> isim kontrol edildi — Hiçbirinde marka çakışması bulunamadı!';
   }
-  summaryDiv.style.border = conflicts.length > 0 ? "1px solid #fecaca" : "1px solid #a7f3d0";
 
   listDiv.innerHTML = "";
 
-  // Çakışma listesi
-  if (conflicts.length > 0) {
-    const header1 = document.createElement("div");
-    header1.style.cssText = "font-size:13px;font-weight:700;color:#b91c1c;padding:12px 0 6px;border-bottom:2px solid #fecaca;margin-bottom:4px;";
-    header1.textContent = "⚠️ Marka Çakışması Olanlar (" + conflicts.length + ")";
-    listDiv.appendChild(header1);
+  // Tüm sonuçları tek listede göster: önce çakışmalar, sonra temizler
+  const sorted = [...conflicts, ...clear];
+  sorted.forEach((r, idx) => {
+    const isClear = r.status === "CLEAR";
+    const sourceLabel2 = r.source === "TR" ? "🇹🇷" : r.source === "US" ? "🇺🇸" : r.source === "EM" ? "🇪🇺" : r.source === "WO" ? "🌐" : r.source;
+    const row = document.createElement("div");
+    row.className = "row";
 
-    conflicts.forEach((r, idx) => {
-      const sourceLabel2 = r.source === "TR" ? "🇹🇷" : r.source === "US" ? "🇺🇸" : r.source === "EM" ? "🇪🇺" : r.source === "WO" ? "🌐" : r.source;
-      const row = document.createElement("div");
-      row.className = "row";
+    if (isClear) {
       row.innerHTML = `
-        <div style="font-size:11px;color:#94a3b8;font-weight:600;min-width:24px;">${idx + 1}.</div>
+        <div class="dot" style="background:#059669"></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700;color:#1e293b;">${r.brand}</div>
+          <div style="font-size:11px;color:#64748b;margin-top:2px;">${r.totalFound > 0 ? r.totalFound + ' benzer sonuç var ama tam eşleşme yok' : 'WIPO veritabanında kayıt bulunamadı — TEMİZ'}</div>
+        </div>
+        <div class="badge" style="background:#ecfdf5;color:#047857;border:1px solid #a7f3d0">TEMİZ</div>
+      `;
+    } else {
+      row.innerHTML = `
         <div class="dot" style="background:#dc2626"></div>
         <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;gap:6px;">
-            <span style="font-size:12px;font-weight:600;color:#1e293b;">${r.brand}</span>
-            <span style="font-size:9px;color:#dc2626;">→ "${r.name}"</span>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span style="font-size:13px;font-weight:700;color:#1e293b;">${r.brand}</span>
+            <span style="font-size:10px;color:#dc2626;font-weight:600;">→ "${r.name}"</span>
           </div>
-          <div style="font-size:10px;color:#64748b;margin-top:1px;">
+          <div style="font-size:11px;color:#64748b;margin-top:2px;">
             ${sourceLabel2} ${r.source} · ${r.status}${r.country ? ' · ' + r.country : ''}${r.owner ? ' · ' + r.owner : ''}${r.niceClass ? ' · Sınıf: ' + r.niceClass : ''}
           </div>
         </div>
         <div class="badge" style="background:#fef2f2;color:#b91c1c;border:1px solid #fecaca">ÇAKIŞMA</div>
       `;
-      listDiv.appendChild(row);
-    });
-  }
-
-  // Temiz listesi
-  if (clear.length > 0) {
-    const header2 = document.createElement("div");
-    header2.style.cssText = "font-size:13px;font-weight:700;color:#047857;padding:12px 0 6px;border-bottom:2px solid #a7f3d0;margin-bottom:4px;" + (conflicts.length > 0 ? "margin-top:16px;" : "");
-    header2.textContent = "✅ Müsait — Marka Temiz (" + clear.length + ")";
-    listDiv.appendChild(header2);
-
-    clear.forEach((r, idx) => {
-      const row = document.createElement("div");
-      row.className = "row";
-      row.innerHTML = `
-        <div style="font-size:11px;color:#94a3b8;font-weight:600;min-width:24px;">${idx + 1}.</div>
-        <div class="dot" style="background:#059669"></div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:12px;font-weight:600;color:#1e293b;">${r.brand}</div>
-          <div style="font-size:10px;color:#64748b;margin-top:1px;">${r.totalFound > 0 ? r.totalFound + ' benzer sonuç var ama tam eşleşme yok' : 'WIPO veritabanında kayıt bulunamadı'}</div>
-        </div>
-        <div class="badge" style="background:#ecfdf5;color:#047857;border:1px solid #a7f3d0">TEMİZ</div>
-      `;
-      listDiv.appendChild(row);
-    });
-  }
+    }
+    listDiv.appendChild(row);
+  });
 
   results.forEach(r => {
     if (r.status !== "available") return;
