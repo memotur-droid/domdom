@@ -1584,6 +1584,41 @@ function copyAvailable() {
 updatePreview();
 renderFavorites();
 
+// ===================== CORS PROXY =====================
+const CORS_PROXIES = [
+  url => "https://api.allorigins.win/raw?url=" + encodeURIComponent(url),
+  url => "https://corsproxy.io/?" + encodeURIComponent(url),
+  url => "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(url),
+];
+let workingProxyIdx = 0;
+
+async function fetchWithProxy(url, timeout = 10000) {
+  // Önce çalışan proxy'yi dene
+  const order = [workingProxyIdx, ...CORS_PROXIES.map((_, i) => i).filter(i => i !== workingProxyIdx)];
+  for (const idx of order) {
+    try {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), timeout);
+      const proxiedUrl = CORS_PROXIES[idx](url);
+      const resp = await fetch(proxiedUrl, { signal: ctrl.signal });
+      clearTimeout(t);
+      if (resp.ok) {
+        workingProxyIdx = idx;
+        return await resp.text();
+      }
+    } catch {}
+  }
+  // Son çare: doğrudan dene (CORS izin veriyorsa)
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), timeout);
+    const resp = await fetch(url, { signal: ctrl.signal });
+    clearTimeout(t);
+    if (resp.ok) return await resp.text();
+  } catch {}
+  return null;
+}
+
 // ===================== TRADEMARK SEARCH =====================
 
 async function autoTrademarkCheck(availableDomains) {
@@ -1654,55 +1689,43 @@ async function autoTrademarkCheck(availableDomains) {
         start: "0",
       });
 
-      const ctrl = new AbortController();
-      const t = setTimeout(() => ctrl.abort(), 8000);
-      const resp = await fetch("https://branddb.wipo.int/branddb/jsp/select.jsp?" + params.toString(), { signal: ctrl.signal });
-      clearTimeout(t);
+      const wipoUrl = "https://branddb.wipo.int/branddb/jsp/select.jsp?" + params.toString();
+      const text = await fetchWithProxy(wipoUrl, 10000);
 
-      if (resp.ok) {
+      if (text) {
         errorCount = 0;
-        const text = await resp.text();
-        try {
-          const data = JSON.parse(text);
-          const docs = data?.response?.docs || [];
-          const total = data?.response?.numFound || 0;
+        const data = JSON.parse(text);
+        const docs = data?.response?.docs || [];
+        const total = data?.response?.numFound || 0;
 
-          const matches = docs.filter(doc => {
-            const b = (Array.isArray(doc.BRAND) ? doc.BRAND[0] : doc.BRAND || "").toLowerCase();
-            return b === brand.toLowerCase() || b.replace(/\s+/g, "") === brand.replace(/\s+/g, "");
-          });
+        const matches = docs.filter(doc => {
+          const b = (Array.isArray(doc.BRAND) ? doc.BRAND[0] : doc.BRAND || "").toLowerCase();
+          return b === brand.toLowerCase() || b.replace(/\s+/g, "") === brand.replace(/\s+/g, "");
+        });
 
-          if (matches.length > 0) {
-            matches.forEach(doc => {
-              const result = {
-                brand, name: (Array.isArray(doc.BRAND) ? doc.BRAND[0] : doc.BRAND) || "—",
-                source: (Array.isArray(doc.SOURCE) ? doc.SOURCE[0] : doc.SOURCE) || "—",
-                status: (Array.isArray(doc.STATUS) ? doc.STATUS[0] : doc.STATUS) || "—",
-                owner: (Array.isArray(doc.HOL) ? doc.HOL[0] : doc.HOL) || "",
-                country: (Array.isArray(doc.OO) ? doc.OO[0] : doc.OO) || "",
-                niceClass: (Array.isArray(doc.NC) ? doc.NC.join(", ") : doc.NC) || "",
-                totalFound: total,
-              };
-              allTmResults.push(result);
+        if (matches.length > 0) {
+          matches.forEach(doc => {
+            allTmResults.push({
+              brand, name: (Array.isArray(doc.BRAND) ? doc.BRAND[0] : doc.BRAND) || "—",
+              source: (Array.isArray(doc.SOURCE) ? doc.SOURCE[0] : doc.SOURCE) || "—",
+              status: (Array.isArray(doc.STATUS) ? doc.STATUS[0] : doc.STATUS) || "—",
+              owner: (Array.isArray(doc.HOL) ? doc.HOL[0] : doc.HOL) || "",
+              country: (Array.isArray(doc.OO) ? doc.OO[0] : doc.OO) || "",
+              niceClass: (Array.isArray(doc.NC) ? doc.NC.join(", ") : doc.NC) || "",
+              totalFound: total,
             });
-          } else {
-            const result = { brand, name: brand, source: "—", status: "CLEAR", owner: "", country: "", niceClass: "", totalFound: total };
-            allTmResults.push(result);
-          }
-        } catch {}
-      } else if (resp.status === 429) {
-        errorCount++;
-        const waitTime = longPause * errorCount;
-        loading.innerHTML = `<div style="color:#d97706;"><span class="spinner"></span> Rate limit — ${waitTime/1000}sn bekleniyor... (${checked}/${totalBrands})</div>`;
-        await new Promise(r => setTimeout(r, waitTime));
-        i--; checked--;
-        continue;
+          });
+        } else {
+          allTmResults.push({ brand, name: brand, source: "—", status: "CLEAR", owner: "", country: "", niceClass: "", totalFound: total });
+        }
       } else {
         errorCount++;
+        if (!allTmResults.some(r => r.brand === brand)) {
+          allTmResults.push({ brand, name: brand, source: "—", status: "CLEAR", owner: "", country: "", niceClass: "", totalFound: 0, apiError: true });
+        }
       }
     } catch (e) {
       errorCount++;
-      // API hata verse bile brand'ı sonuçlara ekle (kontrol edilemedi olarak)
       if (!allTmResults.some(r => r.brand === brand)) {
         allTmResults.push({ brand, name: brand, source: "—", status: "CLEAR", owner: "", country: "", niceClass: "", totalFound: 0, apiError: true });
       }
@@ -1853,18 +1876,11 @@ async function searchTrademark() {
       params.append("fq", "SOURCE:" + sourceFilter);
     }
 
-    const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 12000);
+    const wipoUrl = "https://branddb.wipo.int/branddb/jsp/select.jsp?" + params.toString();
+    const respText = await fetchWithProxy(wipoUrl, 12000);
 
-    const resp = await fetch("https://branddb.wipo.int/branddb/jsp/select.jsp?" + params.toString(), {
-      signal: ctrl.signal,
-    });
-    clearTimeout(t);
-
-    if (resp.ok) {
-      const text = await resp.text();
-      try {
-        const data = JSON.parse(text);
+    if (respText) {
+        const data = JSON.parse(respText);
         const docs = data?.response?.docs || [];
         const total = data?.response?.numFound || 0;
 
@@ -1926,12 +1942,9 @@ async function searchTrademark() {
         });
 
         return;
-      } catch (parseErr) {
-        console.error("WIPO parse error:", parseErr);
-      }
     }
   } catch (e) {
-    console.error("WIPO fetch error:", e);
+    console.error("WIPO error:", e);
   }
 
   loading.classList.add("hidden");
