@@ -1702,6 +1702,10 @@ async function autoTrademarkCheck(availableDomains) {
       }
     } catch (e) {
       errorCount++;
+      // API hata verse bile brand'ı sonuçlara ekle (kontrol edilemedi olarak)
+      if (!allTmResults.some(r => r.brand === brand)) {
+        allTmResults.push({ brand, name: brand, source: "—", status: "CLEAR", owner: "", country: "", niceClass: "", totalFound: 0, apiError: true });
+      }
     }
 
     if (errorCount >= errorThreshold) {
@@ -1722,7 +1726,7 @@ async function autoTrademarkCheck(availableDomains) {
   const conflicts = allTmResults.filter(r => r.status !== "CLEAR");
   const clear = allTmResults.filter(r => r.status === "CLEAR");
 
-  // Özet başlık
+  // Özet başlık — her zaman brand listesi göster
   if (conflicts.length > 0) {
     summaryDiv.style.background = "#fef2f2";
     summaryDiv.style.color = "#b91c1c";
@@ -1737,38 +1741,64 @@ async function autoTrademarkCheck(availableDomains) {
 
   listDiv.innerHTML = "";
 
+  // allTmResults boşsa bile brandNames'ten listeyi oluştur
+  if (allTmResults.length === 0) {
+    brandNames.forEach(brand => {
+      allTmResults.push({ brand, name: brand, source: "—", status: "CLEAR", owner: "", country: "", niceClass: "", totalFound: 0, apiError: true });
+    });
+  }
+
   // Tüm sonuçları tek listede göster: önce çakışmalar, sonra temizler
   const sorted = [...conflicts, ...clear];
-  sorted.forEach((r, idx) => {
-    const isClear = r.status === "CLEAR";
+
+  // Başlık: Çakışmalar
+  if (conflicts.length > 0) {
+    const h1 = document.createElement("div");
+    h1.style.cssText = "padding:10px 18px;font-size:12px;font-weight:700;color:#b91c1c;background:#fef2f2;border-bottom:1px solid #fecaca;";
+    h1.textContent = "⚠️ Çakışma Bulunanlar (" + conflicts.length + ")";
+    listDiv.appendChild(h1);
+  }
+
+  conflicts.forEach(r => {
     const sourceLabel2 = r.source === "TR" ? "🇹🇷" : r.source === "US" ? "🇺🇸" : r.source === "EM" ? "🇪🇺" : r.source === "WO" ? "🌐" : r.source;
     const row = document.createElement("div");
     row.className = "row";
+    row.innerHTML = `
+      <div class="dot" style="background:#dc2626"></div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span style="font-size:13px;font-weight:700;color:#1e293b;">${r.brand}</span>
+          <span style="font-size:10px;color:#dc2626;font-weight:600;">→ "${r.name}"</span>
+        </div>
+        <div style="font-size:11px;color:#64748b;margin-top:2px;">
+          ${sourceLabel2} ${r.source} · ${r.status}${r.country ? ' · ' + r.country : ''}${r.owner ? ' · ' + r.owner : ''}${r.niceClass ? ' · Sınıf: ' + r.niceClass : ''}
+        </div>
+      </div>
+      <div class="badge" style="background:#fef2f2;color:#b91c1c;border:1px solid #fecaca">ÇAKIŞMA</div>
+    `;
+    listDiv.appendChild(row);
+  });
 
-    if (isClear) {
-      row.innerHTML = `
-        <div class="dot" style="background:#059669"></div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:700;color:#1e293b;">${r.brand}</div>
-          <div style="font-size:11px;color:#64748b;margin-top:2px;">${r.totalFound > 0 ? r.totalFound + ' benzer sonuç var ama tam eşleşme yok' : 'WIPO veritabanında kayıt bulunamadı — TEMİZ'}</div>
-        </div>
-        <div class="badge" style="background:#ecfdf5;color:#047857;border:1px solid #a7f3d0">TEMİZ</div>
-      `;
-    } else {
-      row.innerHTML = `
-        <div class="dot" style="background:#dc2626"></div>
-        <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-            <span style="font-size:13px;font-weight:700;color:#1e293b;">${r.brand}</span>
-            <span style="font-size:10px;color:#dc2626;font-weight:600;">→ "${r.name}"</span>
-          </div>
-          <div style="font-size:11px;color:#64748b;margin-top:2px;">
-            ${sourceLabel2} ${r.source} · ${r.status}${r.country ? ' · ' + r.country : ''}${r.owner ? ' · ' + r.owner : ''}${r.niceClass ? ' · Sınıf: ' + r.niceClass : ''}
-          </div>
-        </div>
-        <div class="badge" style="background:#fef2f2;color:#b91c1c;border:1px solid #fecaca">ÇAKIŞMA</div>
-      `;
-    }
+  // Başlık: Temiz olanlar
+  if (clear.length > 0) {
+    const h2 = document.createElement("div");
+    h2.style.cssText = "padding:10px 18px;font-size:12px;font-weight:700;color:#047857;background:#ecfdf5;border-bottom:1px solid #a7f3d0;" + (conflicts.length > 0 ? "border-top:1px solid #e5e7eb;" : "");
+    h2.textContent = "✅ Temiz Olanlar (" + clear.length + ")";
+    listDiv.appendChild(h2);
+  }
+
+  clear.forEach(r => {
+    const row = document.createElement("div");
+    row.className = "row";
+    const detailText = r.apiError ? 'Sorgulanamadı — API yanıt vermedi' : (r.totalFound > 0 ? r.totalFound + ' benzer sonuç var ama tam eşleşme yok' : 'WIPO veritabanında kayıt bulunamadı');
+    row.innerHTML = `
+      <div class="dot" style="background:#059669"></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:700;color:#1e293b;">${r.brand}</div>
+        <div style="font-size:11px;color:#64748b;margin-top:2px;">${detailText}</div>
+      </div>
+      <div class="badge" style="background:#ecfdf5;color:#047857;border:1px solid #a7f3d0">TEMİZ</div>
+    `;
     listDiv.appendChild(row);
   });
 
