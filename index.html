@@ -1353,7 +1353,7 @@ async function startCheck() {
 
   const availableDomains = results.filter(r => r.status === "available");
   if (availableDomains.length > 0 && document.getElementById("autoTmCheck").checked) {
-    await autoTrademarkCheck(availableDomains);
+    autoTrademarkCheck(availableDomains);
   }
 }
 
@@ -1584,48 +1584,23 @@ function copyAvailable() {
 updatePreview();
 renderFavorites();
 
-// ===================== CORS PROXY =====================
-const CORS_PROXIES = [
-  url => "https://api.allorigins.win/raw?url=" + encodeURIComponent(url),
-  url => "https://corsproxy.io/?" + encodeURIComponent(url),
-  url => "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(url),
-];
-let workingProxyIdx = 0;
-
-async function fetchWithProxy(url, timeout = 10000) {
-  // Önce çalışan proxy'yi dene
-  const order = [workingProxyIdx, ...CORS_PROXIES.map((_, i) => i).filter(i => i !== workingProxyIdx)];
-  for (const idx of order) {
-    try {
-      const ctrl = new AbortController();
-      const t = setTimeout(() => ctrl.abort(), timeout);
-      const proxiedUrl = CORS_PROXIES[idx](url);
-      const resp = await fetch(proxiedUrl, { signal: ctrl.signal });
-      clearTimeout(t);
-      if (resp.ok) {
-        workingProxyIdx = idx;
-        return await resp.text();
-      }
-    } catch {}
-  }
-  // Son çare: doğrudan dene (CORS izin veriyorsa)
-  try {
-    const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), timeout);
-    const resp = await fetch(url, { signal: ctrl.signal });
-    clearTimeout(t);
-    if (resp.ok) return await resp.text();
-  } catch {}
-  return null;
-}
-
 // ===================== TRADEMARK SEARCH =====================
 
-async function autoTrademarkCheck(availableDomains) {
-  const loading = document.getElementById("tmLoading");
+function getTmLinks(brand) {
+  const q = encodeURIComponent(brand);
+  return {
+    wipo: "https://branddb.wipo.int/branddb/en/#702",
+    turkpatent: "https://online.turkpatent.gov.tr/trademark-search/pub/trademark_search",
+    uspto: "https://tmsearch.uspto.gov/",
+    euipo: "https://euipo.europa.eu/eSearch/#basic/1+1+1+1/100+100+100+100/" + q,
+  };
+}
+
+function autoTrademarkCheck(availableDomains) {
   const resultsDiv = document.getElementById("tmResults");
   const summaryDiv = document.getElementById("tmSummary");
   const listDiv = document.getElementById("tmList");
+  const loading = document.getElementById("tmLoading");
 
   const brandNames = [...new Set(availableDomains.map(r => {
     const parts = r.domain.split(".");
@@ -1633,341 +1608,89 @@ async function autoTrademarkCheck(availableDomains) {
     return parts.join(".").replace(/-/g, " ");
   }))];
 
-  const totalBrands = brandNames.length;
-
-  loading.classList.remove("hidden");
-  loading.innerHTML = '<span class="spinner"></span> Marka kontrolü başlıyor... (' + totalBrands + ' isim sorgulanacak)';
-  resultsDiv.style.display = "none";
-  summaryDiv.innerHTML = "";
-  listDiv.innerHTML = "";
-
-  document.getElementById("trademarkSection").scrollIntoView({ behavior: "smooth", block: "start" });
-
-  let allTmResults = [];
-  let checked = 0;
-  let errorCount = 0;
-  const tmStartTime = Date.now();
-
-  const batchSize = 5;
-  const delayBetween = 2000;
-  const batchPause = 5000;
-  const longPause = 10000;
-  const errorThreshold = 2;
-
-  for (let i = 0; i < totalBrands; i++) {
-    if (aborted) break;
-
-    const brand = brandNames[i];
-    checked++;
-
-    const elapsed = (Date.now() - tmStartTime) / 1000;
-    const speed = checked > 1 ? (checked / elapsed).toFixed(1) : "—";
-    const remaining = totalBrands - checked;
-    const eta = checked > 1 && elapsed > 0 ? Math.ceil(remaining / (checked / elapsed)) : 0;
-    const etaStr = eta > 60 ? Math.floor(eta/60) + "dk " + (eta%60) + "sn" : eta + "sn";
-    const pct = ((checked / totalBrands) * 100).toFixed(0);
-
-    loading.innerHTML = `
-      <div style="display:flex;flex-direction:column;gap:4px;align-items:center;">
-        <div><span class="spinner"></span> Marka kontrolü: "<strong>${brand}</strong>"</div>
-        <div style="font-size:10px;color:#64748b;">${checked}/${totalBrands} (${pct}%) · ${speed} isim/sn · ${remaining > 0 ? etaStr + ' kaldı' : 'tamamlanıyor...'}</div>
-        <div class="bar-track" style="width:100%;max-width:400px;margin-top:2px;">
-          <div class="bar-fill" style="width:${pct}%;background:linear-gradient(90deg,#8b5cf6,#6366f1,#06b6d4);"></div>
-        </div>
-      </div>
-    `;
-
-    try {
-      const params = new URLSearchParams({
-        q: "BRAND:" + brand,
-        fl: "BRAND,SOURCE,STATUS,OO,HOL,NC",
-        type: "brand",
-        "json.nl": "map",
-        wt: "json",
-        sort: "score desc",
-        rows: "5",
-        start: "0",
-      });
-
-      const wipoUrl = "https://branddb.wipo.int/branddb/jsp/select.jsp?" + params.toString();
-      const text = await fetchWithProxy(wipoUrl, 10000);
-
-      if (text) {
-        errorCount = 0;
-        const data = JSON.parse(text);
-        const docs = data?.response?.docs || [];
-        const total = data?.response?.numFound || 0;
-
-        const matches = docs.filter(doc => {
-          const b = (Array.isArray(doc.BRAND) ? doc.BRAND[0] : doc.BRAND || "").toLowerCase();
-          return b === brand.toLowerCase() || b.replace(/\s+/g, "") === brand.replace(/\s+/g, "");
-        });
-
-        if (matches.length > 0) {
-          matches.forEach(doc => {
-            allTmResults.push({
-              brand, name: (Array.isArray(doc.BRAND) ? doc.BRAND[0] : doc.BRAND) || "—",
-              source: (Array.isArray(doc.SOURCE) ? doc.SOURCE[0] : doc.SOURCE) || "—",
-              status: (Array.isArray(doc.STATUS) ? doc.STATUS[0] : doc.STATUS) || "—",
-              owner: (Array.isArray(doc.HOL) ? doc.HOL[0] : doc.HOL) || "",
-              country: (Array.isArray(doc.OO) ? doc.OO[0] : doc.OO) || "",
-              niceClass: (Array.isArray(doc.NC) ? doc.NC.join(", ") : doc.NC) || "",
-              totalFound: total,
-            });
-          });
-        } else {
-          allTmResults.push({ brand, name: brand, source: "—", status: "CLEAR", owner: "", country: "", niceClass: "", totalFound: total });
-        }
-      } else {
-        errorCount++;
-        if (!allTmResults.some(r => r.brand === brand)) {
-          allTmResults.push({ brand, name: brand, source: "—", status: "CLEAR", owner: "", country: "", niceClass: "", totalFound: 0, apiError: true });
-        }
-      }
-    } catch (e) {
-      errorCount++;
-      if (!allTmResults.some(r => r.brand === brand)) {
-        allTmResults.push({ brand, name: brand, source: "—", status: "CLEAR", owner: "", country: "", niceClass: "", totalFound: 0, apiError: true });
-      }
-    }
-
-    if (errorCount >= errorThreshold) {
-      loading.innerHTML = `<div style="color:#d97706;"><span class="spinner"></span> Çok fazla hata — ${longPause/1000}sn mola... (${checked}/${totalBrands})</div>`;
-      await new Promise(r => setTimeout(r, longPause));
-      errorCount = 0;
-    } else if (i > 0 && i % batchSize === 0) {
-      loading.innerHTML = `<div style="color:#4f46e5;"><span class="spinner"></span> Batch mola (${batchPause/1000}sn)... ${checked}/${totalBrands} tamamlandı</div>`;
-      await new Promise(r => setTimeout(r, batchPause));
-    } else if (i < totalBrands - 1) {
-      await new Promise(r => setTimeout(r, delayBetween));
-    }
-  }
-
   loading.classList.add("hidden");
   resultsDiv.style.display = "block";
 
-  // allTmResults boşsa bile brandNames'ten listeyi oluştur
-  if (allTmResults.length === 0) {
-    brandNames.forEach(brand => {
-      allTmResults.push({ brand, name: brand, source: "—", status: "CLEAR", owner: "", country: "", niceClass: "", totalFound: 0, apiError: true });
-    });
-  }
-
-  const conflicts = allTmResults.filter(r => r.status !== "CLEAR");
-  const clear = allTmResults.filter(r => r.status === "CLEAR");
-
-  // Özet başlık
-  if (conflicts.length > 0) {
-    summaryDiv.style.background = "#fef2f2";
-    summaryDiv.style.color = "#b91c1c";
-    summaryDiv.style.border = "1px solid #fecaca";
-    summaryDiv.innerHTML = '⚠️ <strong>' + totalBrands + '</strong> isim kontrol edildi — <strong>' + conflicts.length + ' çakışma</strong> bulundu, <strong>' + clear.length + '</strong> temiz';
-  } else {
-    summaryDiv.style.background = "#ecfdf5";
-    summaryDiv.style.color = "#047857";
-    summaryDiv.style.border = "1px solid #a7f3d0";
-    summaryDiv.innerHTML = '✅ <strong>' + totalBrands + '</strong> isim kontrol edildi — Hiçbirinde marka çakışması bulunamadı!';
-  }
+  summaryDiv.style.background = "#f0f9ff";
+  summaryDiv.style.color = "#0c4a6e";
+  summaryDiv.style.border = "1px solid #bae6fd";
+  summaryDiv.innerHTML = '🏛️ <strong>' + brandNames.length + '</strong> müsait domain için marka kontrol linkleri hazırlandı. Her satırdaki bağlantılardan veritabanlarında arayabilirsiniz.';
 
   listDiv.innerHTML = "";
 
-  // Başlık: Çakışmalar
-  if (conflicts.length > 0) {
-    const h1 = document.createElement("div");
-    h1.style.cssText = "padding:10px 18px;font-size:12px;font-weight:700;color:#b91c1c;background:#fef2f2;border-bottom:1px solid #fecaca;";
-    h1.textContent = "⚠️ Çakışma Bulunanlar (" + conflicts.length + ")";
-    listDiv.appendChild(h1);
-  }
-
-  conflicts.forEach(r => {
-    const sourceLabel2 = r.source === "TR" ? "🇹🇷" : r.source === "US" ? "🇺🇸" : r.source === "EM" ? "🇪🇺" : r.source === "WO" ? "🌐" : r.source;
+  brandNames.forEach(brand => {
+    const links = getTmLinks(brand);
     const row = document.createElement("div");
     row.className = "row";
+    row.style.cssText = "flex-wrap:wrap;gap:10px;";
     row.innerHTML = `
-      <div class="dot" style="background:#dc2626"></div>
+      <div class="dot" style="background:var(--accent)"></div>
       <div style="flex:1;min-width:0">
-        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-          <span style="font-size:13px;font-weight:700;color:#1e293b;">${r.brand}</span>
-          <span style="font-size:10px;color:#dc2626;font-weight:600;">→ "${r.name}"</span>
-        </div>
-        <div style="font-size:11px;color:#64748b;margin-top:2px;">
-          ${sourceLabel2} ${r.source} · ${r.status}${r.country ? ' · ' + r.country : ''}${r.owner ? ' · ' + r.owner : ''}${r.niceClass ? ' · Sınıf: ' + r.niceClass : ''}
+        <div style="font-size:14px;font-weight:700;color:#1e293b;">${brand}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
+          <a href="${links.wipo}" target="_blank" style="font-size:11px;color:#4f46e5;text-decoration:none;font-weight:600;padding:3px 10px;border-radius:6px;background:#eef2ff;border:1px solid #c7d2fe;white-space:nowrap;">🌐 WIPO</a>
+          <a href="${links.turkpatent}" target="_blank" style="font-size:11px;color:#4f46e5;text-decoration:none;font-weight:600;padding:3px 10px;border-radius:6px;background:#eef2ff;border:1px solid #c7d2fe;white-space:nowrap;">🇹🇷 Türkpatent</a>
+          <a href="${links.uspto}" target="_blank" style="font-size:11px;color:#4f46e5;text-decoration:none;font-weight:600;padding:3px 10px;border-radius:6px;background:#eef2ff;border:1px solid #c7d2fe;white-space:nowrap;">🇺🇸 USPTO</a>
+          <a href="${links.euipo}" target="_blank" style="font-size:11px;color:#4f46e5;text-decoration:none;font-weight:600;padding:3px 10px;border-radius:6px;background:#eef2ff;border:1px solid #c7d2fe;white-space:nowrap;">🇪🇺 EUIPO</a>
+          <button onclick="navigator.clipboard.writeText('${brand.replace(/'/g, "\\'")}');this.textContent='✓ Kopyalandı';setTimeout(()=>this.textContent='📋 Kopyala',1000)" style="font-size:11px;color:#6b7280;cursor:pointer;font-weight:600;padding:3px 10px;border-radius:6px;background:#f3f4f6;border:1px solid #e5e7eb;white-space:nowrap;font-family:'Inter',sans-serif;">📋 Kopyala</button>
         </div>
       </div>
-      <div class="badge" style="background:#fef2f2;color:#b91c1c;border:1px solid #fecaca">ÇAKIŞMA</div>
     `;
     listDiv.appendChild(row);
   });
-
-  // Başlık: Temiz olanlar
-  if (clear.length > 0) {
-    const h2 = document.createElement("div");
-    h2.style.cssText = "padding:10px 18px;font-size:12px;font-weight:700;color:#047857;background:#ecfdf5;border-bottom:1px solid #a7f3d0;" + (conflicts.length > 0 ? "border-top:1px solid #e5e7eb;" : "");
-    h2.textContent = "✅ Temiz Olanlar (" + clear.length + ")";
-    listDiv.appendChild(h2);
-  }
-
-  clear.forEach(r => {
-    const row = document.createElement("div");
-    row.className = "row";
-    const detailText = r.apiError ? 'Sorgulanamadı — API yanıt vermedi' : (r.totalFound > 0 ? r.totalFound + ' benzer sonuç var ama tam eşleşme yok' : 'WIPO veritabanında kayıt bulunamadı');
-    row.innerHTML = `
-      <div class="dot" style="background:#059669"></div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:700;color:#1e293b;">${r.brand}</div>
-        <div style="font-size:11px;color:#64748b;margin-top:2px;">${detailText}</div>
-      </div>
-      <div class="badge" style="background:#ecfdf5;color:#047857;border:1px solid #a7f3d0">TEMİZ</div>
-    `;
-    listDiv.appendChild(row);
-  });
-
-  results.forEach(r => {
-    if (r.status !== "available") return;
-    const brandName = r.domain.split(".").slice(0, -1).join(".").replace(/-/g, " ");
-    const tmResult = allTmResults.find(t => t.brand === brandName);
-    if (tmResult) {
-      if (tmResult.status === "CLEAR") {
-        r.tmStatus = "clear";
-        r.info += " · 🏛️ Marka temiz";
-      } else {
-        r.tmStatus = "conflict";
-        r.info += " · ⚠️ Marka çakışması: " + tmResult.name + " (" + tmResult.source + ")";
-      }
-    }
-  });
-  renderResults();
 
   document.getElementById("trademarkSection").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-async function searchTrademark() {
+function searchTrademark() {
   const query = document.getElementById("tmInput").value.trim();
   if (!query) return;
 
-  const source = document.getElementById("tmSource").value;
   const loading = document.getElementById("tmLoading");
   const resultsDiv = document.getElementById("tmResults");
   const summaryDiv = document.getElementById("tmSummary");
   const listDiv = document.getElementById("tmList");
-  const btn = document.getElementById("tmSearchBtn");
-
-  loading.classList.remove("hidden");
-  resultsDiv.style.display = "none";
-  btn.disabled = true;
-
-  let allResults = [];
-
-  const sourceFilter = source === "all" ? "" : source;
-
-  try {
-    const params = new URLSearchParams({
-      q: "BRAND:" + query,
-      fl: "BRAND,SOURCE,STATUS,OO,HOL,ID,AD,NC",
-      type: "brand",
-      "json.nl": "map",
-      wt: "json",
-      sort: "score desc,AD desc",
-      rows: "30",
-      start: "0",
-    });
-
-    if (sourceFilter) {
-      params.append("fq", "SOURCE:" + sourceFilter);
-    }
-
-    const wipoUrl = "https://branddb.wipo.int/branddb/jsp/select.jsp?" + params.toString();
-    const respText = await fetchWithProxy(wipoUrl, 12000);
-
-    if (respText) {
-        const data = JSON.parse(respText);
-        const docs = data?.response?.docs || [];
-        const total = data?.response?.numFound || 0;
-
-        docs.forEach(doc => {
-          allResults.push({
-            name: (Array.isArray(doc.BRAND) ? doc.BRAND[0] : doc.BRAND) || "—",
-            source: (Array.isArray(doc.SOURCE) ? doc.SOURCE[0] : doc.SOURCE) || "—",
-            status: (Array.isArray(doc.STATUS) ? doc.STATUS[0] : doc.STATUS) || "—",
-            owner: (Array.isArray(doc.HOL) ? doc.HOL[0] : doc.HOL) || "",
-            country: (Array.isArray(doc.OO) ? doc.OO[0] : doc.OO) || "",
-            date: (Array.isArray(doc.AD) ? doc.AD[0] : doc.AD) || "",
-            niceClass: (Array.isArray(doc.NC) ? doc.NC.join(", ") : doc.NC) || "",
-          });
-        });
-
-        loading.classList.add("hidden");
-        resultsDiv.style.display = "block";
-        btn.disabled = false;
-
-        if (allResults.length === 0) {
-          summaryDiv.style.background = "#ecfdf5";
-          summaryDiv.style.color = "#047857";
-          summaryDiv.style.border = "1px solid #a7f3d0";
-          summaryDiv.innerHTML = '✅ <strong>"' + query + '"</strong> için ' + (source === "all" ? "hiçbir ülkede" : sourceLabel(source) + " veritabanında") + ' tescilli marka bulunamadı. ' + (total > 0 ? '(' + total + ' benzer sonuç bulundu, tam eşleşme yok)' : '') + ' Marka tescili için uygun görünüyor!';
-        } else {
-          const trCount = allResults.filter(r => r.source === "TR").length;
-          summaryDiv.style.background = "#fef2f2";
-          summaryDiv.style.color = "#b91c1c";
-          summaryDiv.style.border = "1px solid #fecaca";
-          summaryDiv.innerHTML = '⚠️ <strong>"' + query + '"</strong> için <strong>' + total + '</strong> marka kaydı bulundu' +
-            (trCount > 0 ? ' (Türkiye: ' + trCount + ')' : '') +
-            '. İlk ' + allResults.length + ' sonuç aşağıda:';
-        }
-
-        listDiv.innerHTML = "";
-        allResults.forEach(r => {
-          const statusColor = r.status === "Registered" || r.status === "REGISTERED" ? "#ef4444" :
-                             r.status === "Pending" || r.status === "PENDING" ? "#f59e0b" :
-                             r.status === "Expired" || r.status === "EXPIRED" ? "#64748b" : "#94a3b8";
-          const sourceLabel2 = r.source === "TR" ? "🇹🇷 Türkpatent" :
-                              r.source === "US" ? "🇺🇸 USPTO" :
-                              r.source === "EM" ? "🇪🇺 EUIPO" :
-                              r.source === "WO" ? "🌐 WIPO" : r.source;
-
-          const row = document.createElement("div");
-          row.className = "row";
-          row.innerHTML = `
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:center;gap:8px;">
-                <span style="font-size:12px;font-weight:600;color:#1e293b;">${r.name}</span>
-                <span style="font-size:9px;padding:2px 6px;border-radius:4px;background:#f1f5f9;color:${statusColor};font-family:'Inter',sans-serif;">${r.status}</span>
-              </div>
-              <div style="font-size:10px;color:#64748b;margin-top:2px;">
-                ${sourceLabel2}${r.country ? " · " + r.country : ""}${r.owner ? " · " + r.owner : ""}${r.niceClass ? " · Sınıf: " + r.niceClass : ""}${r.date ? " · " + r.date.substring(0, 10) : ""}
-              </div>
-            </div>
-          `;
-          listDiv.appendChild(row);
-        });
-
-        return;
-    }
-  } catch (e) {
-    console.error("WIPO error:", e);
-  }
 
   loading.classList.add("hidden");
   resultsDiv.style.display = "block";
-  btn.disabled = false;
 
-  summaryDiv.style.background = "#fffbeb";
-  summaryDiv.style.color = "#b45309";
-  summaryDiv.style.border = "1px solid #fde68a";
-  summaryDiv.innerHTML = '⚠️ WIPO veritabanına otomatik erişilemedi. Aşağıdaki bağlantılardan <strong>"' + query + '"</strong> markasını manuel olarak kontrol edebilirsiniz:';
+  const links = getTmLinks(query);
 
-  listDiv.innerHTML = `
-    <div style="padding:12px;display:flex;flex-direction:column;gap:8px;">
-      <a href="https://online.turkpatent.gov.tr/trademark-search/pub/trademark_search" target="_blank" style="color:#4f46e5;font-size:12px;text-decoration:none;font-family:'Inter',sans-serif;">🇹🇷 Türkpatent Marka Araştırma → "${query}" yazarak arayın ↗</a>
-      <a href="https://branddb.wipo.int/branddb/en/#702" target="_blank" style="color:#4f46e5;font-size:12px;text-decoration:none;font-family:'Inter',sans-serif;">🌐 WIPO Global Brand Database → "${query}" yazarak arayın ↗</a>
-      <a href="https://tmsearch.uspto.gov/" target="_blank" style="color:#4f46e5;font-size:12px;text-decoration:none;font-family:'Inter',sans-serif;">🇺🇸 USPTO TESS → "${query}" yazarak arayın ↗</a>
-      <a href="https://euipo.europa.eu/eSearch/#basic/1+1+1+1/100+100+100+100/${encodeURIComponent(query)}" target="_blank" style="color:#4f46e5;font-size:12px;text-decoration:none;font-family:'Inter',sans-serif;">🇪🇺 EUIPO eSearch → "${query}" yazarak arayın ↗</a>
+  summaryDiv.style.background = "#f0f9ff";
+  summaryDiv.style.color = "#0c4a6e";
+  summaryDiv.style.border = "1px solid #bae6fd";
+  summaryDiv.innerHTML = '🏛️ <strong>"' + query + '"</strong> markasını aşağıdaki veritabanlarında arayın:';
+
+  listDiv.innerHTML = "";
+
+  const row = document.createElement("div");
+  row.style.cssText = "padding:16px 18px;display:flex;flex-direction:column;gap:10px;";
+  row.innerHTML = `
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <a href="${links.wipo}" target="_blank" style="flex:1;min-width:140px;display:flex;align-items:center;gap:8px;padding:12px 16px;border-radius:12px;background:#fff;border:1.5px solid #e5e7eb;text-decoration:none;color:#1e293b;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;transition:all .2s;">
+        <span style="font-size:20px;">🌐</span>
+        <div><div>WIPO Global Brand DB</div><div style="font-size:10px;color:#6b7280;font-weight:400;">60+ ülke marka veritabanı</div></div>
+      </a>
+      <a href="${links.turkpatent}" target="_blank" style="flex:1;min-width:140px;display:flex;align-items:center;gap:8px;padding:12px 16px;border-radius:12px;background:#fff;border:1.5px solid #e5e7eb;text-decoration:none;color:#1e293b;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;transition:all .2s;">
+        <span style="font-size:20px;">🇹🇷</span>
+        <div><div>Türkpatent</div><div style="font-size:10px;color:#6b7280;font-weight:400;">Türkiye marka tescil</div></div>
+      </a>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <a href="${links.uspto}" target="_blank" style="flex:1;min-width:140px;display:flex;align-items:center;gap:8px;padding:12px 16px;border-radius:12px;background:#fff;border:1.5px solid #e5e7eb;text-decoration:none;color:#1e293b;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;transition:all .2s;">
+        <span style="font-size:20px;">🇺🇸</span>
+        <div><div>USPTO TESS</div><div style="font-size:10px;color:#6b7280;font-weight:400;">ABD marka veritabanı</div></div>
+      </a>
+      <a href="${links.euipo}" target="_blank" style="flex:1;min-width:140px;display:flex;align-items:center;gap:8px;padding:12px 16px;border-radius:12px;background:#fff;border:1.5px solid #e5e7eb;text-decoration:none;color:#1e293b;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;transition:all .2s;">
+        <span style="font-size:20px;">🇪🇺</span>
+        <div><div>EUIPO eSearch</div><div style="font-size:10px;color:#6b7280;font-weight:400;">AB marka veritabanı</div></div>
+      </a>
+    </div>
+    <div style="font-size:11px;color:#64748b;font-family:'Inter',sans-serif;padding:8px 0 0;border-top:1px solid #f1f5f9;">
+      💡 Açılan sayfada "<strong>${query}</strong>" yazarak arayın. WIPO ve diğer veritabanları captcha koruması kullandığı için otomatik sorgulama yapılamamaktadır.
     </div>
   `;
-}
-
-function sourceLabel(s) {
-  return s === "TR" ? "Türkpatent" : s === "US" ? "USPTO" : s === "EM" ? "EUIPO" : s === "WO" ? "WIPO" : s;
+  listDiv.appendChild(row);
 }
 </script>
 </body>
